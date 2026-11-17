@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<!-- 개발 기록
+(게시할 때 주의) 아티팩트에서 읽어 온 index.html에는 게시 도구가 덧붙인 틀이 있다. 맨 앞 한 줄(소문자 doctype으로 시작해 body 여는 태그로 끝나는 줄)과 맨 끝의 body·html 닫는 태그 한 쌍이다. 고쳐서 다시 게시하거나 GitHub Pages에 올릴 때는 그 둘을 빼고, 대문자 DOCTYPE 줄부터 html 닫는 태그까지만 쓴다. 빼지 않고 다시 게시하면 틀이 한 겹씩 더 쌓인다.
+2026-11-14 야간 개선: 좁은 화면의 아래 탭 바, 노치·홈 바 여백, 누르는 자리 44px 이상, 320px 머리 정리 (자세한 것은 git 기록과 SPEC 23장)
+2026-11-15 야간 개선: 고체 조제의 엔터, 320px 배너 그림, 좁은 화면의 제목 띠와 꼬리 (자세한 것은 git 기록과 SPEC 23장)
+2026-11-15 낮(대화 작업): 11-14·11-15 야간 변경을 원본 프로젝트 폴더에 옮겨 SPEC 22장과 합침. 새 화면 #curve(적정 곡선)·#report(결과 정리)·#prep(준비표), 조제 목록 보관·공유, 계산 29가지, 준비물 59가지, 화면 색은 밝기 둘 × 색 다섯(data-theme, data-accent). 새 화면 셋도 FIRST_DRAW로 처음 열 때 그림. 밝기 버튼·색 점·준비표의 누르는 자리 44px. 새 파일 curve.js, share.js. fonts/는 tools/build_fonts.py가 woff2까지 만든다(fonts.css를 손으로 고치지 않는다). 원본 폴더에서 node --test 97건, 화면 확인 79항목 통과(SPEC.md 23장) / 다음에 할 일: 1) 체험 완료 코드는 아직 '미정' 2) 실제 휴대폰에서 탭 바·홈 바 여백·눌림 표시 확인 3) 게시본만 고치면 원본 폴더·tests와 다시 어긋난다. 고친 것은 이 기록에 적어 둔다
+2026-11-15 저녁(대화 작업): SPEC 24장. 새 화면 #waste(폐액 버리기, waste.js)와 #plan(실험 계획서, plan.js), 결과 정리에 파일 넣기(filein.js: CSV·XLSX·HWPX·DOCX)와 초시계, 라이트 바탕을 한 단계 낮춤(style.css 끝의 SPEC 24장 묶음), 오늘의 추천은 배너의 둘째·셋째 장(홈 아래 구역은 없앰), 홈의 네모 여덟. 원본 폴더에서 node --test 108건, 화면 확인 84항목 통과 / 다음에 할 일: 1) 폐액 규칙·계획서 문구는 선생님 검토 전이라 글을 바꾸지 않는다 2) 게시본만 고치면 원본 폴더·tests와 다시 어긋난다
+2026-11-15 밤(대화 작업): SPEC 25장. 새 화면 #error(오차 분석, error.js: Q 검정·기구 불확도·정확도/정밀도·실험별 오차 원인과 방향), 결과 정리에 [결과 정리표 | 실험 보고서]와 보고서 양식 넣기(plan.js의 분석·고찰·결론 항목), 준비물 84가지(심화 25)와 사용법 33가지(experiments.js의 HOW), 계산 도구·준비물 찾기 칸, 라이트의 실험 탭 상자만 한 단계 어둡게, 숫자 읽기(음수·지수·전각·쉼표)와 음수 칸의 글자 자판, [직접 입력]을 고르면 칸을 비우고 초점, 머리의 "null" 고침. node --test 112건, 화면 확인 89항목 통과 / 다음에 할 일: 1) 오차 원인·사용법·허용 오차를 선생님이 검토 2) 실제 휴대폰에서 직접 입력 자판 확인 3) 게시본만 고치면 원본 폴더·tests와 다시 어긋난다
+2026-11-16 야간 개선: 기기가 다크이고 밝기를 고른 적 없을 때(data-theme 없음) 밝은 바탕에 밝은 글자가 나오던 것을 고침(SPEC 24·25의 라이트 규칙이 기기 다크에도 걸렸음). 라이트 노랑·보라의 작은 탭 글자 대비를 4.5:1 위로. 고친 파일: style.css 맨 끝 "앱처럼 다듬기 4"뿐. app.js·계산·문구는 그대로 / 다음에 할 일: 1) 그 묶음을 원본 폴더 style.css 끝에 붙이고 tests 돌리기 2) 체험 완료 코드 '미정' 3) title이 파일 앞 8KB 끝에 가깝다. 다음 기록은 200자 안으로
+2026-11-16 SPEC 26: 1분 체험, PubChem 시약표 467종(GHS), 폐액이 시약표 이름을 모두 알아들음. node --test 117건, 화면 92항목 / 다음: GHS·더한 40종 선생님 검토, 완료 코드
+2026-11-17 야간 개선: 1분 체험에서 비추는 것(수화물 배지·권장 조제량·완료 코드)이 안내 카드 뒤에 숨던 것 고침(app.js tourSpot만). style.css 끝 "앱처럼 다듬기 5": 긴 placeholder 말줄임, 움직임 줄이기 / 다음: 1) 둘을 원본 폴더로, tests 2) 완료 코드 '미정' 3) 좁은 표 카드의 긴 값 겹침
+-->
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>용액 레시피 메이커</title>
+  <meta name="description" content="화학 실험 준비용 계산기와 실험 자료">
+  <!-- 브라우저 위쪽 띠의 색. 화면 색을 고르면 app.js가 지금 색으로 바꾼다. -->
+  <meta name="theme-color" content="#f4f6f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1e252e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header no-print">
+    <div class="site-util">
+      <div class="site-util__in">
+        <div class="sample">
+          <p class="note" id="sample-note" role="status"></p>
+          <div class="mode-pick" id="mode-pick" role="group" aria-label="화면 밝기"></div>
+          <div class="theme-pick" id="theme-pick" role="group" aria-label="화면 색"></div>
+          <button type="button" class="btn btn--sample" id="btn-sample">샘플<span class="btn-sample__more">: 총괄성 실험</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="site-header__in">
+      <a class="brand" href="#home" aria-label="용액 레시피 메이커 홈으로">
+        <span class="brand__glyph" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 4h8M13.5 4v8.2L6.6 24.4A2.4 2.4 0 0 0 8.7 28h14.6a2.4 2.4 0 0 0 2.1-3.6L18.5 12.2V4"/>
+            <path d="M9.8 20h12.4"/>
+          </svg>
+        </span>
+        <div class="brand__text">
+          <h1>용액 레시피 메이커</h1>
+        </div>
+      </a>
+      <button type="button" class="menu-btn" id="btn-menu" aria-expanded="false" aria-controls="site-menu">메뉴</button>
+      <div class="site-menu" id="site-menu">
+        <nav class="site-nav" id="site-nav" aria-label="주 메뉴">
+          <a href="#labs" data-nav="labs">실험</a>
+          <a href="#topics" data-nav="topics" hidden>R&amp;E 주제</a>
+          <a href="#tools" data-nav="tools">계산 도구</a>
+          <a href="#theory" data-nav="theory">이론값 계산</a>
+          <a href="#solid" data-nav="solid">용액 조제</a>
+          <a href="#reagents" data-nav="reagents">시약표</a>
+          <a href="#recipe" data-nav="recipe">레시피·라벨</a>
+        </nav>
+      </div>
+      <form class="site-search" id="site-search-form" role="search">
+        <button type="button" class="site-search__btn" id="btn-search" aria-label="검색 열기" aria-expanded="false" aria-controls="site-search">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        </button>
+        <input id="site-search" type="search" placeholder="산염기, 적정처럼 짧게 쳐도 돼요" aria-label="검색" hidden>
+      </form>
+    </div>
+  </header>
+  <div class="page-band no-print" id="page-band" hidden>
+    <div class="page-band__in">
+      <nav class="crumb no-print" id="crumb" aria-label="현재 위치" hidden>
+        <button type="button" class="crumb__back" id="btn-back">← 뒤로</button>
+        <a class="crumb__home" href="#home">홈</a>
+        <span class="crumb__sep" aria-hidden="true">›</span>
+        <strong class="crumb__here" id="crumb-here"></strong>
+      </nav>
+      <h2 class="page-band__title" id="page-title"></h2>
+      <p class="page-band__text" id="page-desc"></p>
+      <nav class="subnav no-print" id="subnav" aria-label="용액 조제" hidden></nav>
+    </div>
+  </div>
+  <div class="app">
+
+    <!-- 홈: 큰 버튼 넷, 오늘의 추천, 색이 변하는 실험 -->
+    <section class="panel" id="panel-home">
+      <div class="hero full" id="hero" role="region" aria-roledescription="carousel" aria-label="이 앱으로 할 수 있는 일">
+        <div class="hero__track" id="hero-track">
+          <div class="slide slide--prep" role="group" aria-roledescription="slide">
+            <div class="hero__in">
+              <div class="hero__copy">
+                <h2 class="hero__title">0.1 M NaCl 250 mL, 몇 g 달아야 하지?</h2>
+                <p class="hero__text">시약이랑 농도, 부피만 넣으면 바로 나와요.</p>
+                <button type="button" class="btn btn--primary slide__cta" data-go="solid">용액 조제 열기</button>
+              </div>
+              <div class="hero__art" aria-hidden="true">
+                <div class="bottle">
+                  <span class="bottle__cap"></span>
+                  <span class="bottle__neck"></span>
+                  <div class="bottle__body">
+                    <div class="bottle__label">
+                      <strong>염화 나트륨 수용액</strong>
+                      <span class="bottle__conc">0.100 M</span>
+                      <span class="bottle__row">NaCl 1.461 g → 250 mL</span>
+                      <span class="bottle__row">조제일 2026-11-17</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bottle bottle--small">
+                  <span class="bottle__cap"></span>
+                  <span class="bottle__neck"></span>
+                  <div class="bottle__body">
+                    <div class="bottle__label">
+                      <strong>묽은 염산</strong>
+                      <span class="bottle__conc">1.00 M</span>
+                      <span class="bottle__row">진한 염산 8.6 mL → 100 mL</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 오늘의 추천: 날마다 실험 하나와 R&E 주제 하나를 고른다 (SPEC 24장. 전에는 홈 아래에 있었다) -->
+          <div class="slide slide--today" id="slide-today-lab" role="group" aria-roledescription="slide">
+            <div class="hero__in">
+              <div class="hero__copy">
+                <p class="hero__tag">오늘의 실험</p>
+                <h2 class="hero__title" id="today-lab-title"></h2>
+                <p class="hero__text" id="today-lab-text"></p>
+                <button type="button" class="btn btn--primary slide__cta" id="today-lab">실험 보기</button>
+              </div>
+              <div class="hero__art" aria-hidden="true">
+                <div class="today-art" id="today-lab-art"></div>
+              </div>
+            </div>
+          </div>
+          <div class="slide slide--topic" id="slide-today-topic" role="group" aria-roledescription="slide">
+            <div class="hero__in">
+              <div class="hero__copy">
+                <p class="hero__tag">오늘의 R&amp;E 주제</p>
+                <h2 class="hero__title" id="today-topic-title"></h2>
+                <p class="hero__text" id="today-topic-text"></p>
+                <button type="button" class="btn btn--primary slide__cta" id="today-topic">주제 보기</button>
+              </div>
+              <div class="hero__art" aria-hidden="true">
+                <div class="today-art today-art--topic" id="today-topic-art"></div>
+              </div>
+            </div>
+          </div>
+          <div class="slide slide--colors" role="group" aria-roledescription="slide">
+            <div class="hero__in">
+              <div class="hero__copy">
+                <h2 class="hero__title">흔들면 파랑, 그냥 두면 무색</h2>
+                <p class="hero__text">색이 변하는 실험 <span id="slide-color-count"></span>개를 모아 뒀어요.</p>
+                <button type="button" class="btn btn--primary slide__cta" id="slide-colors-btn">색이 변하는 실험 보기</button>
+              </div>
+              <div class="hero__art" aria-hidden="true">
+                <svg class="flasks" viewBox="0 0 360 200" width="360" height="200" fill="none">
+                  <defs>
+                    <linearGradient id="liq-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8668f"/><stop offset="1" stop-color="#2b5fd1"/></linearGradient>
+                    <linearGradient id="liq-b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3fa34d"/><stop offset="0.5" stop-color="#d9363e"/><stop offset="1" stop-color="#f2c81e"/></linearGradient>
+                    <linearGradient id="liq-c" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f4f6f8"/><stop offset="1" stop-color="#2c63d2"/></linearGradient>
+                  </defs>
+                  <g stroke="#ffffff" stroke-opacity="0.85" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+                    <path d="M26 148 L50 104 H70 L94 148 Q98 166 82 166 H38 Q22 166 26 148 Z" fill="url(#liq-a)" stroke="none"/>
+                    <path d="M48 34 H72 M52 34 V98 L24 150 Q18 170 38 170 H82 Q102 170 96 150 L68 98 V34"/>
+                    <path d="M146 138 L164 104 H196 L214 138 Q222 166 200 166 H160 Q138 166 146 138 Z" fill="url(#liq-b)" stroke="none"/>
+                    <path d="M166 22 H194 M170 22 V96 L142 146 Q134 170 158 170 H202 Q226 170 218 146 L190 96 V22"/>
+                    <path d="M266 148 L290 104 H310 L334 148 Q338 166 322 166 H278 Q262 166 266 148 Z" fill="url(#liq-c)" stroke="none"/>
+                    <path d="M288 34 H312 M292 34 V98 L264 150 Q258 170 278 170 H322 Q342 170 336 150 L308 98 V34"/>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="slide slide--indicator" role="group" aria-roledescription="slide">
+            <div class="hero__in">
+              <div class="hero__copy">
+                <h2 class="hero__title">pH 7에서 BTB는 무슨 색일까?</h2>
+                <p class="hero__text">pH 막대를 움직이면 지시약 10종의 색이 바뀌어요.</p>
+                <button type="button" class="btn btn--primary slide__cta" id="slide-indicator-btn">지시약 색 보기</button>
+              </div>
+              <div class="hero__art" aria-hidden="true">
+                <div class="ph-strip" id="slide-indicator-art"></div>
+              </div>
+            </div>
+          </div>
+          <div class="slide slide--label" role="group" aria-roledescription="slide">
+            <div class="hero__in">
+              <div class="hero__copy">
+                <h2 class="hero__title">병에 붙일 라벨도 바로</h2>
+                <p class="hero__text">목록에 담은 용액이 A4 한 장에 12개씩 나와요.</p>
+                <button type="button" class="btn btn--primary slide__cta" data-go="recipe">라벨 만들기</button>
+              </div>
+              <div class="hero__art" aria-hidden="true">
+                <div class="mini-sheet">
+                  <span class="mini-label mini-label--on"><strong>염화 나트륨</strong><b>0.100 M</b><i></i></span>
+                  <span class="mini-label mini-label--on"><strong>포도당</strong><b>0.500 M</b><i></i></span>
+                  <span class="mini-label mini-label--on"><strong>요소</strong><b>0.500 M</b><i></i></span>
+                  <span class="mini-label mini-label--on"><strong>메틸렌 블루</strong><b>10 mg/L</b><i></i></span>
+                  <span class="mini-label"></span><span class="mini-label"></span><span class="mini-label"></span><span class="mini-label"></span>
+                  <span class="mini-label"></span><span class="mini-label"></span><span class="mini-label"></span><span class="mini-label"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hero__ctrl">
+          <button type="button" class="hero__arrow" id="hero-prev" aria-label="이전 장">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+          <div class="hero__dots" id="hero-dots"></div>
+          <button type="button" class="hero__arrow" id="hero-next" aria-label="다음 장">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <button type="button" class="hero__arrow hero__pause" id="hero-pause" aria-label="자동 넘김 멈추기">
+            <svg class="icon-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+            <svg class="icon-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button type="button" class="hero__tour" id="tour-start-hero" data-tour-start>1분 체험</button>
+        </div>
+      </div>
+      <div class="quick">
+        <h2 class="visually-hidden">할 일 고르기</h2>
+        <div class="nav-cards" id="nav-cards"></div>
+        <div class="nav-more" id="nav-more"></div>
+      </div>
+      <div class="tour-start">
+        <div class="tour-start__copy">
+          <h2 class="tour-start__title">처음이라면 1분 체험부터</h2>
+          <p class="tour-start__text">샘플로 칭량 질량 → 수화물 보정 → 희석 → 레시피 카드 → 한글 라벨까지 차례로 보여 줘요.</p>
+        </div>
+        <button type="button" class="btn btn--primary tour-start__btn" id="tour-start" data-tour-start>1분 체험 시작</button>
+      </div>
+    </section>
+
+    <!-- 고체 조제 -->
+    <section class="panel" id="panel-solid" hidden>
+      <div class="split">
+        <form class="card form" id="solid-form" autocomplete="off" novalidate>
+          <h2 class="card__title">용액 조건</h2>
+          <div class="field">
+            <label for="reagent">시약</label>
+            <select id="reagent">
+              <optgroup label="기본 시약" id="reagent-builtin"></optgroup>
+              <optgroup label="시약표에서 고른 시약" id="reagent-school" hidden></optgroup>
+            </select>
+            <p class="field__hint" id="reagent-info"></p>
+            <button type="button" class="link-btn" id="btn-find">시약표에서 찾기</button>
+          </div>
+          <div class="field-pair" id="custom-fields" hidden>
+            <div class="field">
+              <label for="custom-name">시약 이름</label>
+              <input id="custom-name" type="text" maxlength="30">
+            </div>
+            <div class="field">
+              <label for="custom-mm">몰질량</label>
+              <div class="suffix suffix--wide"><input id="custom-mm" type="text" inputmode="decimal"><span>g/mol</span></div>
+            </div>
+          </div>
+          <div class="field-pair field-pair--unit">
+            <div class="field">
+              <label for="conc">농도</label>
+              <input id="conc" type="text" inputmode="decimal" placeholder="예: 0.100">
+            </div>
+            <div class="field">
+              <label for="unit">단위</label>
+              <select id="unit"></select>
+            </div>
+          </div>
+          <div class="field-pair">
+            <div class="field">
+              <label for="volume">부피</label>
+              <div class="suffix"><input id="volume" type="text" inputmode="decimal" placeholder="예: 250"><span>mL</span></div>
+            </div>
+            <div class="field">
+              <label for="purity">순도</label>
+              <div class="suffix"><input id="purity" type="text" inputmode="decimal" value="100"><span>%</span></div>
+            </div>
+          </div>
+        </form>
+
+        <div class="card result" id="solid-card" data-state="wait">
+          <div id="solid-result" aria-live="polite"></div>
+          <div class="result__actions">
+            <button type="button" class="btn btn--primary" id="btn-add">목록에 추가</button>
+            <p class="note" id="list-note" role="status"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">
+          <h2 class="card__title">조제 목록</h2>
+          <span class="count" id="list-count">0 / 12</span>
+        </div>
+        <p class="empty" id="list-empty">아직 담은 용액이 없어요. 위에서 계산하고 [목록에 추가]를 눌러 보세요.</p>
+        <table class="table" id="prep-table" hidden>
+          <thead>
+            <tr><th scope="col">시약</th><th scope="col">농도</th><th scope="col">부피</th><th scope="col">순도·함량</th><th scope="col">칭량 질량·취할 부피</th><th scope="col">표시</th><th scope="col"><span class="visually-hidden">삭제</span></th></tr>
+          </thead>
+          <tbody id="prep-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 액체 시약 -->
+    <section class="panel" id="panel-liquid" hidden>
+      <div class="split">
+        <form class="card form" id="liq-form" autocomplete="off" novalidate>
+          <h2 class="card__title">진한 산·염기와 액체 시약</h2>
+          <div class="field">
+            <label for="liq-reagent">시약</label>
+            <select id="liq-reagent">
+              <optgroup label="시판 진한 산·염기 (대표값)" id="liq-presets"></optgroup>
+              <optgroup label="시약표의 액체 시약 (함량·밀도는 병 라벨을 보고 입력)" id="liq-school" hidden></optgroup>
+            </select>
+            <p class="field__hint" id="liq-info"></p>
+          </div>
+          <div class="field" id="liq-name-field" hidden>
+            <label for="liq-name">시약 이름</label>
+            <input id="liq-name" type="text" maxlength="30">
+          </div>
+          <div class="field-trio">
+            <div class="field">
+              <label for="liq-mm">몰질량</label>
+              <div class="suffix suffix--wide"><input id="liq-mm" type="text" inputmode="decimal"><span>g/mol</span></div>
+            </div>
+            <div class="field">
+              <label for="liq-percent">함량</label>
+              <div class="suffix"><input id="liq-percent" type="text" inputmode="decimal"><span>%</span></div>
+            </div>
+            <div class="field">
+              <label for="liq-density">밀도</label>
+              <div class="suffix suffix--wide"><input id="liq-density" type="text" inputmode="decimal"><span>g/mL</span></div>
+            </div>
+          </div>
+          <div class="field-pair field-pair--unit">
+            <div class="field">
+              <label for="liq-conc">만들 농도</label>
+              <input id="liq-conc" type="text" inputmode="decimal" placeholder="예: 1.00">
+            </div>
+            <div class="field">
+              <label for="liq-unit">단위</label>
+              <select id="liq-unit"></select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="liq-volume">만들 부피</label>
+            <div class="suffix"><input id="liq-volume" type="text" inputmode="decimal" placeholder="예: 100"><span>mL</span></div>
+          </div>
+          <p class="safety">진한 산과 염기는 꼭 보안경과 장갑을 끼고 후드에서 다루세요. 물을 먼저 넣고, 시약은 그다음에 천천히 넣어요.</p>
+        </form>
+
+        <div class="card result" id="liq-card" data-state="wait">
+          <div id="liq-result" aria-live="polite"></div>
+          <div class="result__actions">
+            <button type="button" class="btn btn--primary" id="btn-liq-add">목록에 추가</button>
+            <p class="note" id="liq-note" role="status"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 희석 -->
+    <section class="panel" id="panel-dilution" hidden>
+      <div class="split split--even">
+        <form class="card form" id="dil-form" autocomplete="off" novalidate>
+          <h2 class="card__title">원액과 목표</h2>
+          <div class="field">
+            <label for="dil-name">용액 이름</label>
+            <input id="dil-name" type="text" maxlength="30">
+            <p class="field__hint">레시피와 라벨에 들어가는 이름이에요. 비워 두면 '용액'이라고 적혀요.</p>
+          </div>
+          <div class="field-pair field-pair--unit">
+            <div class="field">
+              <label for="dil-stock">원액 농도</label>
+              <input id="dil-stock" type="text" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label for="dil-unit">단위</label>
+              <select id="dil-unit"></select>
+            </div>
+          </div>
+          <div class="rows">
+            <div class="rows__head" aria-hidden="true"><span></span><span>목표 농도</span><span>부피</span><span></span></div>
+            <div id="dil-rows"></div>
+          </div>
+          <div class="row-actions">
+            <button type="button" class="btn" id="btn-add-row">행 추가</button>
+            <span class="note" id="dil-row-note" role="status"></span>
+          </div>
+        </form>
+
+        <div class="card">
+          <h2 class="card__title">희석 결과</h2>
+          <p class="hint" id="dil-message"></p>
+          <table class="table" id="dil-table" hidden>
+            <thead>
+              <tr><th scope="col">목표 농도</th><th scope="col">부피</th><th scope="col">원액 부피</th><th scope="col">증류수 부피</th><th scope="col">표시</th></tr>
+            </thead>
+            <tbody id="dil-result"></tbody>
+          </table>
+          <div class="stats" id="dil-summary" hidden>
+            <p class="stat" id="dil-total"></p>
+            <p class="stat" id="dil-flask"></p>
+            <p class="stat stat--warn" id="dil-over" hidden></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="split split--even">
+        <form class="card form" id="ser-form" autocomplete="off" novalidate>
+          <h2 class="card__title">연속 희석</h2>
+          <p class="field__hint">앞 단계 용액을 조금 덜어서 같은 배수로 계속 묽히는 방법이에요.</p>
+          <div class="field-pair field-pair--unit">
+            <div class="field">
+              <label for="ser-start">시작 농도</label>
+              <input id="ser-start" type="text" inputmode="decimal" placeholder="예: 1.00">
+            </div>
+            <div class="field">
+              <label for="ser-unit">단위</label>
+              <select id="ser-unit"></select>
+            </div>
+          </div>
+          <div class="field-trio">
+            <div class="field">
+              <label for="ser-factor">희석 배수</label>
+              <div class="suffix"><input id="ser-factor" type="text" inputmode="decimal" value="10"><span>배</span></div>
+            </div>
+            <div class="field">
+              <label for="ser-steps">단계 수</label>
+              <div class="suffix"><input id="ser-steps" type="text" inputmode="numeric" value="4"><span>단계</span></div>
+            </div>
+            <div class="field">
+              <label for="ser-volume">단계별 부피</label>
+              <div class="suffix"><input id="ser-volume" type="text" inputmode="decimal" value="10"><span>mL</span></div>
+            </div>
+          </div>
+        </form>
+
+        <div class="card">
+          <h2 class="card__title">연속 희석 결과</h2>
+          <p class="hint" id="ser-message"></p>
+          <p class="lead" id="ser-summary" hidden></p>
+          <table class="table" id="ser-table" hidden>
+            <thead>
+              <tr><th scope="col">단계</th><th scope="col">농도</th><th scope="col">옮겨 올 용액</th><th scope="col">증류수</th><th scope="col">남는 부피</th></tr>
+            </thead>
+            <tbody id="ser-result"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 계산 도구: 왼쪽에서 고르고 오른쪽에서 계산한다 -->
+    <section class="panel" id="panel-tools" hidden>
+      <div class="library" id="tool-index">
+        <div class="library__body">
+          <aside class="lnb-box tool-lnb">
+            <h3 class="lnb__title">계산 <span id="tool-count"></span></h3>
+            <div class="tool-find">
+              <label class="visually-hidden" for="tool-query">계산 검색</label>
+              <input id="tool-query" type="search" placeholder="몰, pH, 희석처럼 짧게" autocomplete="off" enterkeyhint="search">
+            </div>
+            <p class="tool-find__none" id="tool-none" hidden></p>
+            <div class="tool-hits" id="tool-hits" role="group" aria-label="찾은 계산" hidden></div>
+            <nav class="tool-nav" id="tool-nav" aria-label="계산 목록"></nav>
+            <div class="field lnb__select">
+              <label for="tool-pick">계산 고르기</label>
+              <select id="tool-pick"></select>
+            </div>
+          </aside>
+          <div class="library__results tool-main">
+            <header class="tool-head" id="tool-head"></header>
+            <form class="card form tool" id="cv-form" autocomplete="off" novalidate>
+              <h2 class="card__title visually-hidden">농도 환산</h2>
+              <div class="field-pair">
+                <div class="field">
+                  <label for="cv-reagent">시약</label>
+                  <select id="cv-reagent"></select>
+                </div>
+                <div class="field">
+                  <label for="cv-mm">몰질량</label>
+                  <div class="suffix suffix--wide"><input id="cv-mm" type="text" inputmode="decimal"><span>g/mol</span></div>
+                </div>
+              </div>
+              <div class="field-pair field-pair--unit">
+                <div class="field">
+                  <label for="cv-value">값</label>
+                  <input id="cv-value" type="text" inputmode="decimal" placeholder="예: 0.100">
+                </div>
+                <div class="field">
+                  <label for="cv-unit">단위</label>
+                  <select id="cv-unit"></select>
+                </div>
+              </div>
+              <div class="tool__result" id="cv-result" aria-live="polite"></div>
+            </form>
+
+            <form class="card form tool" id="ti-form" autocomplete="off" novalidate>
+              <h2 class="card__title visually-hidden">중화 적정</h2>
+              <fieldset class="group">
+                <legend>표준 용액 (농도를 아는 쪽)</legend>
+                <div class="field-trio">
+                  <div class="field">
+                    <label for="ti-n1">가수</label>
+                    <select id="ti-n1"><option>1</option><option>2</option><option>3</option></select>
+                  </div>
+                  <div class="field">
+                    <label for="ti-c1">농도</label>
+                    <div class="suffix"><input id="ti-c1" type="text" inputmode="decimal" placeholder="0.100"><span>M</span></div>
+                  </div>
+                  <div class="field">
+                    <label for="ti-v1">쓴 부피</label>
+                    <div class="suffix"><input id="ti-v1" type="text" inputmode="decimal" placeholder="25.00"><span>mL</span></div>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset class="group">
+                <legend>모르는 용액</legend>
+                <div class="field-pair">
+                  <div class="field">
+                    <label for="ti-n2">가수</label>
+                    <select id="ti-n2"><option>1</option><option>2</option><option>3</option></select>
+                  </div>
+                  <div class="field">
+                    <label for="ti-v2">부피</label>
+                    <div class="suffix"><input id="ti-v2" type="text" inputmode="decimal" placeholder="20.00"><span>mL</span></div>
+                  </div>
+                </div>
+              </fieldset>
+              <div class="tool__result" id="ti-result" aria-live="polite"></div>
+            </form>
+
+            <form class="card form tool" id="co-form" autocomplete="off" novalidate>
+              <h2 class="card__title visually-hidden">총괄성 (어는점 내림·끓는점 오름)</h2>
+              <div class="field">
+                <label for="co-solvent">용매</label>
+                <select id="co-solvent"></select>
+              </div>
+              <div class="field-quad">
+                <div class="field"><label for="co-kf">K<sub>f</sub> (°C/m)</label><input id="co-kf" type="text" inputmode="text"></div>
+                <div class="field"><label for="co-kb">K<sub>b</sub> (°C/m)</label><input id="co-kb" type="text" inputmode="text"></div>
+                <div class="field"><label for="co-fp">어는점 (°C)</label><input id="co-fp" type="text" inputmode="text"></div>
+                <div class="field"><label for="co-bp">끓는점 (°C)</label><input id="co-bp" type="text" inputmode="text"></div>
+              </div>
+              <div class="field-pair">
+                <div class="field">
+                  <label for="co-mass">용질의 질량</label>
+                  <div class="suffix"><input id="co-mass" type="text" inputmode="decimal" placeholder="5.844"><span>g</span></div>
+                </div>
+                <div class="field">
+                  <label for="co-mm">용질의 몰질량</label>
+                  <div class="suffix suffix--wide"><input id="co-mm" type="text" inputmode="decimal" placeholder="58.44"><span>g/mol</span></div>
+                </div>
+              </div>
+              <div class="field-pair">
+                <div class="field">
+                  <label for="co-solvent-mass">용매의 질량</label>
+                  <div class="suffix"><input id="co-solvent-mass" type="text" inputmode="decimal" placeholder="1000"><span>g</span></div>
+                </div>
+                <div class="field">
+                  <label for="co-i">반트호프 인자 i</label>
+                  <input id="co-i" type="text" inputmode="decimal" value="1">
+                </div>
+              </div>
+              <p class="field__hint">i는 용질 1몰이 녹아서 내놓는 입자의 몰수예요. 이상적으로는 포도당과 요소가 1, NaCl이 2, MgCl₂가 3이에요.</p>
+              <div class="tool__result" id="co-result" aria-live="polite"></div>
+            </form>
+
+            <form class="card form tool" id="ph-form" autocomplete="off" novalidate>
+              <h2 class="card__title visually-hidden">강산·강염기의 pH</h2>
+              <div class="field-trio">
+                <div class="field">
+                  <label for="ph-kind">종류</label>
+                  <select id="ph-kind"><option value="acid">강산</option><option value="base">강염기</option></select>
+                </div>
+                <div class="field">
+                  <label for="ph-n">가수</label>
+                  <select id="ph-n"><option>1</option><option>2</option><option>3</option></select>
+                </div>
+                <div class="field">
+                  <label for="ph-conc">농도</label>
+                  <div class="suffix"><input id="ph-conc" type="text" inputmode="decimal" placeholder="0.010"><span>M</span></div>
+                </div>
+              </div>
+              <p class="field__hint">25 °C에서 전부 이온화한다고 보고 계산해요. 약산과 약염기는 왼쪽 '산과 염기'에서 고르세요.</p>
+              <div class="tool__result" id="ph-result" aria-live="polite"></div>
+            </form>
+            <div class="card form tool" id="more-card" hidden>
+              <h2 class="card__title visually-hidden">계산</h2>
+              <div id="more-calc-box"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 이론값 계산: 실험을 고르고 넣을 양을 적으면 나와야 할 값을 보여 준다 -->
+    <section class="panel" id="panel-theory" hidden>
+      <div class="library" id="theory-index">
+        <div class="library__body">
+          <aside class="lnb-box tool-lnb">
+            <h3 class="lnb__title">실험 <span id="theory-count"></span></h3>
+            <nav class="tool-nav" id="theory-nav" aria-label="이론값을 계산할 실험"></nav>
+            <div class="field lnb__select">
+              <label for="theory-pick">실험 고르기</label>
+              <select id="theory-pick"></select>
+            </div>
+          </aside>
+          <div class="library__results tool-main">
+            <header class="tool-head" id="theory-head"></header>
+            <div class="card form tool" id="theory-card">
+              <h2 class="card__title">넣을 양</h2>
+              <div id="theory-box"></div>
+            </div>
+            <form class="card form tool" id="theory-compare" autocomplete="off" novalidate hidden>
+              <h2 class="card__title">실험값과 견주기</h2>
+              <div class="field">
+                <label for="theory-measured" id="theory-compare-label">실제로 잰 값</label>
+                <div class="suffix suffix--wide"><input id="theory-measured" type="text" inputmode="decimal"><span id="theory-compare-unit"></span></div>
+              </div>
+              <p class="tool__result compare-out" id="theory-compare-out" role="status"></p>
+              <button type="button" class="btn btn--small" id="theory-report">여러 번 잰 값 정리하기</button>
+            </form>
+            <p class="field__hint" id="theory-note">이론값은 반응이 끝까지 가고 열이 새지 않는다고 본 값이에요. 실제 값은 조금 다르게 나와요.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 적정 곡선: 넣은 부피에 따른 pH, 당량점, 지시약의 변색 범위 (SPEC 22장) -->
+    <section class="panel" id="panel-curve" hidden>
+      <div class="curve">
+        <form class="card form curve__form" id="curve-form" autocomplete="off" novalidate>
+          <h2 class="card__title">적정 조건</h2>
+          <div class="field">
+            <label for="cu-kind">적정의 종류</label>
+            <select id="cu-kind"></select>
+            <p class="field__hint" id="cu-example"></p>
+          </div>
+          <fieldset class="group">
+            <legend id="cu-flask-legend">삼각 플라스크 속 용액</legend>
+            <div class="field-pair">
+              <div class="field">
+                <label for="cu-c0">농도</label>
+                <div class="suffix"><input id="cu-c0" type="text" inputmode="decimal" value="0.100"><span>M</span></div>
+              </div>
+              <div class="field">
+                <label for="cu-v0">부피</label>
+                <div class="suffix"><input id="cu-v0" type="text" inputmode="decimal" value="25.00"><span>mL</span></div>
+              </div>
+            </div>
+            <div class="field" id="cu-k-field">
+              <label for="cu-k" id="cu-k-label">이온화 상수 Ka</label>
+              <div class="suffix suffix--wide"><input id="cu-k" type="text" inputmode="decimal" value="1.8"><span>× 10⁻⁵</span></div>
+            </div>
+          </fieldset>
+          <fieldset class="group">
+            <legend id="cu-burette-legend">뷰렛 속 용액</legend>
+            <div class="field">
+              <label for="cu-ct">농도</label>
+              <div class="suffix"><input id="cu-ct" type="text" inputmode="decimal" value="0.100"><span>M</span></div>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="cu-ind">지시약</label>
+            <select id="cu-ind"></select>
+          </div>
+        </form>
+        <div class="curve__main">
+          <div class="card curve__plot">
+            <h2 class="card__title" id="curve-title">적정 곡선</h2>
+            <p class="hint hint--flat" id="curve-empty" role="status" hidden></p>
+            <div class="curve__chart" id="curve-chart"></div>
+            <div class="curve__slide" id="curve-slide">
+              <label for="cu-v">넣은 부피</label>
+              <input id="cu-v" type="range" min="0" max="50" step="0.05" value="0">
+              <output class="curve__now" id="curve-now" for="cu-v"></output>
+            </div>
+          </div>
+          <div class="card">
+            <h2 class="card__title">곡선에서 읽은 값</h2>
+            <div class="tool__result" id="curve-result"></div>
+            <p class="field__hint">25 °C의 값이에요. 지시약은 변색 범위의 가운데 pH에서 색이 바뀐다고 보고 따졌어요.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 결과 정리: 여러 번 잰 값을 평균·오차율과 함께 한 장으로 (SPEC 22장) -->
+    <section class="panel" id="panel-report" hidden>
+      <div class="sheet-page">
+        <div class="card form sheet-page__form no-print">
+          <div class="seg" role="group" aria-label="뽑을 종이">
+            <button type="button" class="seg__btn" data-report-mode="sheet" aria-pressed="true">결과 정리표</button>
+            <button type="button" class="seg__btn" data-report-mode="doc" aria-pressed="false">실험 보고서</button>
+          </div>
+          <div class="file-box" id="report-doc-box" hidden>
+            <h2 class="card__title">보고서</h2>
+            <div class="field-pair">
+              <div class="field">
+                <label for="report-who">학번·이름 (조)</label>
+                <input id="report-who" type="text" maxlength="40" placeholder="예: 2학년 3반 2조" autocomplete="off">
+              </div>
+              <div class="field">
+                <label for="report-day">실험한 날</label>
+                <input id="report-day" type="date">
+              </div>
+            </div>
+            <div id="report-tpl-drop"></div>
+            <div class="file-sum" id="report-tpl" hidden>
+              <p id="report-tpl-sum"></p>
+              <button type="button" class="btn btn--small" id="report-tpl-more" hidden></button>
+              <button type="button" class="btn btn--small" id="report-tpl-clear">양식 빼기</button>
+            </div>
+            <p class="note" id="report-tpl-note" role="status"></p>
+            <p class="field__hint">분석과 고찰에는 [오차 분석]에서 본 것과 고른 원인이 들어가요. 종이의 글을 눌러 바로 고칠 수 있어요.</p>
+            <div class="report-doc__actions">
+              <button type="button" class="btn btn--small" id="report-to-error">오차 분석 열기</button>
+              <button type="button" class="btn btn--small" id="report-doc-reset">고친 글 되돌리기</button>
+            </div>
+          </div>
+          <div class="file-box" id="report-file-box">
+            <h2 class="card__title">파일에서 불러오기</h2>
+            <div id="report-drop"></div>
+            <div class="file-sum" id="report-file" hidden>
+              <p id="report-file-sum"></p>
+              <div class="field" id="report-file-table-field">
+                <label for="report-file-table">표</label>
+                <select id="report-file-table"></select>
+              </div>
+              <div class="field" id="report-file-q-field">
+                <label for="report-file-q" id="report-file-q-label">회차 칸에 넣을 값</label>
+                <select id="report-file-q"></select>
+              </div>
+              <button type="button" class="btn btn--small" id="report-file-clear">파일 빼기</button>
+            </div>
+            <p class="note" id="report-file-note" role="status"></p>
+          </div>
+          <h2 class="card__title card__title--sub">실험과 넣은 양</h2>
+          <div class="field">
+            <label for="report-pick">실험</label>
+            <select id="report-pick"></select>
+          </div>
+          <form id="report-custom" autocomplete="off" novalidate hidden>
+            <div class="field">
+              <label for="report-what">잰 것</label>
+              <input id="report-what" type="text" maxlength="30" placeholder="예: 검량선으로 구한 농도">
+            </div>
+            <div class="field-pair">
+              <div class="field">
+                <label for="report-theory">이론값·문헌값</label>
+                <input id="report-theory" type="text" inputmode="text">
+              </div>
+              <div class="field">
+                <label for="report-unit">단위</label>
+                <input id="report-unit" type="text" maxlength="10" placeholder="예: M">
+              </div>
+            </div>
+          </form>
+          <div id="report-box"></div>
+          <form id="report-form" autocomplete="off" novalidate>
+            <h2 class="card__title card__title--sub">잰 값</h2>
+            <div class="stopwatch" id="report-watch">
+              <span class="stopwatch__time" id="report-watch-time" aria-live="off">0.0 s</span>
+              <button type="button" class="btn btn--small" id="report-watch-btn">초시계 시작</button>
+              <span class="field__hint">반응 시간을 잴 때: 멈추면 걸린 시간(초)이 빈 회차 칸에 들어가요.</span>
+            </div>
+            <div class="trials" id="report-trials"></div>
+            <button type="button" class="btn btn--small" id="report-add">회차 추가</button>
+            <div class="field">
+              <label for="report-memo">메모 (오차가 생긴 까닭, 느낀 점)</label>
+              <textarea id="report-memo" rows="3" maxlength="300"></textarea>
+            </div>
+          </form>
+          <div class="sheet-page__actions">
+            <button type="button" class="btn btn--primary" id="report-print">결과 정리표 인쇄</button>
+            <button type="button" class="btn" id="report-copy">글로 복사</button>
+          </div>
+          <p class="note" id="report-note" role="status"></p>
+        </div>
+        <article class="paper" id="report-paper" aria-label="결과 정리표 미리보기"></article>
+      </div>
+    </section>
+
+    <!-- 오차 분석: 결과 정리에 넣은 값으로 정확도·정밀도, 튀는 값, 기구 불확도, 오차의 원인을 본다 (SPEC 25장) -->
+    <section class="panel" id="panel-error" hidden>
+      <div class="sheet-page">
+        <div class="card form sheet-page__form no-print">
+          <h2 class="card__title">분석할 값</h2>
+          <p class="err-src" id="err-src"></p>
+          <button type="button" class="btn btn--small" id="err-edit">결과 정리에서 값 넣기·고치기</button>
+          <div id="err-body">
+            <h2 class="card__title card__title--sub">튀는 값 (Q 검정)</h2>
+            <div class="err-q" id="err-q"></div>
+            <h2 class="card__title card__title--sub">기구 불확도</h2>
+            <p class="field__hint">계산에 들어간 측정마다 기구의 허용 오차를 적어요. 기구에 적힌 값이 있으면 그 값으로 바꾸세요. 부피 기구는 A급 기준이에요(B급은 대개 두 배). 저울로 잰 질량이나 온도 차처럼 두 번 읽어 뺀 값은 읽은 횟수가 2예요.</p>
+            <div class="err-budget" id="err-budget"></div>
+            <div class="err-budget__actions">
+              <button type="button" class="btn btn--small" id="err-add">줄 추가</button>
+              <button type="button" class="btn btn--small" id="err-preset">이 실험의 기본 기구로</button>
+            </div>
+            <h2 class="card__title card__title--sub">오차의 원인</h2>
+            <p class="field__hint" id="err-causes-hint"></p>
+            <ul class="err-causes" id="err-causes"></ul>
+          </div>
+          <div class="sheet-page__actions">
+            <button type="button" class="btn btn--primary" id="err-print">오차 분석 인쇄</button>
+            <button type="button" class="btn" id="err-copy">글로 복사</button>
+            <button type="button" class="btn" id="err-to-report">보고서로 이어 쓰기</button>
+          </div>
+          <p class="note" id="err-note" role="status"></p>
+        </div>
+        <article class="paper" id="err-paper" aria-label="오차 분석 미리보기"></article>
+      </div>
+    </section>
+
+    <!-- 여러 실험 준비: 실험을 여러 개 고르면 기구와 시약을 한 장에 모은다 (SPEC 22장) -->
+    <section class="panel" id="panel-prep" hidden>
+      <div class="sheet-page">
+        <div class="card form sheet-page__form no-print">
+          <h2 class="card__title">실험 고르기 <span class="count" id="prep-count"></span></h2>
+          <div class="field prep-groups">
+            <label for="prep-groups">조 수 (1~12)</label>
+            <div class="suffix"><input id="prep-groups" type="text" inputmode="numeric" value="1"><span>조</span></div>
+          </div>
+          <div class="sheet-page__actions">
+            <button type="button" class="btn btn--primary" id="prep-print">준비표 인쇄</button>
+            <button type="button" class="btn" id="prep-add">시약 모두 조제 목록에 담기</button>
+            <button type="button" class="btn" id="prep-clear">고른 것 지우기</button>
+          </div>
+          <p class="note" id="prep-note" role="status"></p>
+          <div class="prep-pick" id="prep-pick"></div>
+        </div>
+        <article class="paper" id="prep-paper" aria-label="준비표 미리보기"></article>
+      </div>
+    </section>
+
+    <!-- 실험 계획서: 실험을 고르면 초안을 채우고, 학교 양식 파일을 넣으면 그 차례를 따른다 (SPEC 24장) -->
+    <section class="panel" id="panel-plan" hidden>
+      <div class="sheet-page">
+        <div class="card form sheet-page__form no-print">
+          <h2 class="card__title">실험 고르기</h2>
+          <div class="field">
+            <label for="plan-pick">실험</label>
+            <select id="plan-pick"></select>
+          </div>
+          <div class="field-pair">
+            <div class="field">
+              <label for="plan-who">조·이름</label>
+              <input id="plan-who" type="text" maxlength="40" placeholder="예: 3조">
+            </div>
+            <div class="field">
+              <label for="plan-date">실험 날짜</label>
+              <input id="plan-date" type="date">
+            </div>
+          </div>
+          <div class="field plan-groups">
+            <label for="plan-groups">조 수 (시약 양에 곱해요, 1~12)</label>
+            <div class="suffix"><input id="plan-groups" type="text" inputmode="numeric" value="1"><span>조</span></div>
+          </div>
+          <h2 class="card__title card__title--sub">학교 양식 (있으면)</h2>
+          <div id="plan-drop"></div>
+          <div class="file-sum" id="plan-file" hidden>
+            <p id="plan-file-sum"></p>
+            <div class="file-sum__btns">
+              <button type="button" class="btn btn--small" id="plan-file-more">빠진 항목도 넣기</button>
+              <button type="button" class="btn btn--small" id="plan-file-clear">양식 빼기</button>
+            </div>
+          </div>
+          <div class="file-sum file-sum--guess" id="plan-guess" hidden>
+            <p id="plan-guess-text"></p>
+            <button type="button" class="btn btn--small" id="plan-guess-btn">이 실험으로 채우기</button>
+          </div>
+          <p class="note" id="plan-file-note" role="status"></p>
+          <div class="sheet-page__actions">
+            <button type="button" class="btn btn--primary" id="plan-print">계획서 인쇄</button>
+            <button type="button" class="btn" id="plan-copy">글로 복사</button>
+            <button type="button" class="btn" id="plan-save">이 브라우저에 보관</button>
+            <button type="button" class="btn" id="plan-reset">처음 초안으로</button>
+          </div>
+          <p class="note" id="plan-note" role="status"></p>
+          <div class="plan-saved" id="plan-saved" hidden>
+            <h3 class="saved__title">보관한 계획서</h3>
+            <ul class="saved" id="plan-saved-list"></ul>
+          </div>
+        </div>
+        <article class="paper paper--plan" id="plan-paper" aria-label="실험 계획서 미리보기"></article>
+      </div>
+    </section>
+
+    <!-- 폐액 버리기: 무엇이 섞였는지 고르면 어느 통인지 알려 준다 (SPEC 24장) -->
+    <section class="panel" id="panel-waste" hidden>
+      <p class="waste-rule">통 이름과 나누는 법은 학교마다 조금씩 달라요. 과학실에 붙은 안내와 선생님 말씀을 먼저 따르세요.</p>
+      <div class="waste-page">
+        <div class="card waste-top">
+          <form class="search-box" id="waste-form" role="search" autocomplete="off">
+            <label class="visually-hidden" for="waste-q">무엇이 섞였나요</label>
+            <input id="waste-q" type="search" placeholder="예: 산이 조금 들어간 얼음물, 알긴산 나트륨" list="waste-names">
+            <datalist id="waste-names"></datalist>
+            <button type="submit" class="btn btn--primary">찾기</button>
+          </form>
+          <p class="note" id="waste-note" role="status"></p>
+          <div class="field" id="waste-lab-field">
+            <label for="waste-lab">실험으로 고르기</label>
+            <select id="waste-lab"></select>
+          </div>
+        </div>
+        <div class="waste-side">
+          <div class="card waste-result" id="waste-result" aria-live="polite"></div>
+          <div class="card waste-casebox">
+            <h2 class="card__title">헷갈리는 경우</h2>
+            <div class="waste-cases" id="waste-cases"></div>
+          </div>
+        </div>
+        <div class="card waste-pick">
+          <h2 class="card__title">무엇이 섞였나요</h2>
+          <div id="waste-chips"></div>
+        </div>
+      </div>
+      <div class="home-sec">
+        <div class="section-head"><h2 class="home-h">폐액통 안내</h2></div>
+        <div class="waste-bins" id="waste-bins"></div>
+      </div>
+    </section>
+
+    <!-- 검색 -->
+    <section class="panel" id="panel-search" hidden>
+      <form class="search-box" id="search-form" role="search" autocomplete="off">
+        <label class="visually-hidden" for="search-input">검색어</label>
+        <input id="search-input" type="search" placeholder="산염기, 적정, 뷰렛, NaCl처럼 짧게 쳐도 돼요">
+        <button type="submit" class="btn btn--primary">찾기</button>
+      </form>
+      <p class="search-hint" id="search-hint" role="status"></p>
+      <div class="filter-chips search-suggest" id="search-suggest"></div>
+      <div id="search-results"></div>
+      <p class="empty empty--box" id="search-empty" hidden></p>
+    </section>
+
+    <!-- 시약표 -->
+    <section class="panel" id="panel-reagents" hidden>
+      <div class="card">
+        <div class="card__head">
+          <h2 class="card__title">시약표</h2>
+          <span class="count" id="rg-count"></span>
+        </div>
+        <div class="rg-search">
+          <div class="field">
+            <label for="rg-query">찾기</label>
+            <input id="rg-query" type="search" placeholder="한글명, 영문명, 화학식 (예: 염화, sodium, CuSO4)" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="rg-filter">거르기</label>
+            <select id="rg-filter">
+              <option value="all">전체</option>
+              <option value="hydrate">수화물</option>
+              <option value="liquid">액체</option>
+              <option value="nomass">분자량 없음</option>
+            </select>
+          </div>
+        </div>
+        <p class="empty" id="rg-empty" hidden>시약표에 없는 시약이에요. 고체 조제에서 '직접 입력'을 고르면 이름과 몰질량을 넣을 수 있어요.</p>
+        <ul class="rg-list" id="rg-list"></ul>
+        <button type="button" class="btn rg-more" id="rg-more" hidden>더 보기</button>
+      </div>
+    </section>
+
+    <!-- 실험 -->
+    <section class="panel" id="panel-labs" hidden>
+      <div class="library" id="lab-index">
+        <div class="library__body">
+          <aside class="lnb-box">
+            <h3 class="lnb__title">단원</h3>
+            <ul class="lnb" id="lab-cats"></ul>
+            <div class="field lnb__select">
+              <label for="lab-unit">단원</label>
+              <select id="lab-unit"></select>
+            </div>
+          </aside>
+          <div class="library__results">
+            <div class="toolbar">
+              <p class="toolbar__count" id="lab-count"></p>
+              <div class="toolbar__search">
+                <label class="visually-hidden" for="lab-query">실험 검색</label>
+                <input id="lab-query" type="search" placeholder="산염기, 적정, 뷰렛처럼 짧게" autocomplete="off">
+              </div>
+            </div>
+            <ul class="lab-list" id="lab-list"></ul>
+            <p class="empty empty--box" id="lab-empty" hidden>그런 실험은 아직 없어요. 검색어를 줄이거나 단원을 바꿔 보세요.</p>
+            <button type="button" class="link-btn" id="lab-everywhere" hidden></button>
+          </div>
+        </div>
+      </div>
+      <article class="card lab-detail" id="lab-detail" hidden></article>
+    </section>
+
+    <!-- 색이 변하는 실험 -->
+    <section class="panel" id="panel-colors" hidden>
+      <div class="toolbar">
+        <p class="toolbar__count">색이 변하는 실험 <span id="colors-count"></span></p>
+        <p class="colors-legend"><span><b>→</b> 한쪽으로 바뀌어요</span><span><b>⇌</b> 되돌릴 수 있어요</span><span><b>·</b> 여러 색이 나와요</span></p>
+      </div>
+      <div class="filter-chips colors-units" id="colors-units" role="group" aria-label="단원"></div>
+      <ul class="color-cards colors-list" id="colors-list"></ul>
+      <p class="field__hint colors-note">화면의 색은 대략이에요. 실제 색은 농도와 조명에 따라 달라요.</p>
+    </section>
+
+    <!-- 준비물 -->
+    <section class="panel" id="panel-gear" hidden>
+      <div class="toolbar">
+        <p class="toolbar__count">기구 <span id="gear-count"></span></p>
+        <div class="toolbar__search">
+          <label class="visually-hidden" for="gear-query">준비물 검색</label>
+          <input id="gear-query" type="search" placeholder="뷰렛, 감압, 저울처럼 짧게" autocomplete="off">
+        </div>
+      </div>
+      <div class="gear-filters">
+        <div class="filter-chips" id="gear-cats" role="group" aria-label="기구 종류"></div>
+        <button type="button" class="filter-chip gear-how-only" id="gear-how-only" aria-pressed="false"><span>사용법 있는 것만</span><span class="filter-chip__count" id="gear-how-count"></span></button>
+      </div>
+      <ul class="gear-grid" id="gear-list"></ul>
+      <p class="empty empty--box" id="gear-empty" hidden></p>
+    </section>
+
+    <!-- R&E 주제 추천 -->
+    <section class="panel" id="panel-topics" hidden>
+      <div class="library" id="tp-index">
+        <div class="library__body">
+        <form class="card form filters" id="tp-form" autocomplete="off" novalidate>
+          <h2 class="card__title">R&amp;E 주제 추천</h2>
+          <p class="field__hint">분야랑 장비를 골라 보세요. 안 골라도 돼요.</p>
+          <fieldset class="group">
+            <legend>관심 진로 (여러 개 골라도 돼요)</legend>
+            <div class="checks" id="tp-careers"></div>
+          </fieldset>
+          <fieldset class="group">
+            <legend>쓸 수 있는 장비 (안 고르면 상관없이 찾아요)</legend>
+            <div class="checks" id="tp-tools"></div>
+          </fieldset>
+          <div class="field-pair">
+            <div class="field">
+              <label for="tp-keyword">관심 있는 것 (편하게 적어요)</label>
+              <input id="tp-keyword" type="text" maxlength="60" placeholder="예: 배터리 전해질, 폐수의 염료 없애기">
+            </div>
+            <div class="field">
+              <label for="tp-level">기간과 난이도</label>
+              <select id="tp-level"></select>
+            </div>
+          </div>
+          <p class="tp-read" id="tp-read" role="status" hidden></p>
+          <div class="filters__actions">
+            <button type="submit" class="btn btn--primary" id="btn-recommend">주제 추천 받기</button>
+            <button type="button" class="btn" id="btn-generate">새 주제 만들기</button>
+          </div>
+          <details class="how">
+            <summary>어떻게 고르고 만드나요?</summary>
+            <p>주제 30개에 나온 낱말마다 가중치(TF-IDF)를 매기고, 적어 준 관심사와 낱말이 많이 겹치는 주제부터 보여 줘요(코사인 유사도).</p>
+            <p>진로를 안 고르고 글만 적으면, 가장 가까운 주제 7개가 어느 분야인지 보고 분야를 짐작해요. <span id="tp-eval"></span></p>
+            <p>새 주제는 재료와 바꿀 조건을 조합해서 만들어요. 원래 있던 주제와 덜 닮을수록 '새로움'이 높아요. <span id="tp-combos"></span></p>
+            <p>전부 이 기기 안에서 계산하는 작은 통계 모델이에요. 생성형 AI는 안 써요.</p>
+          </details>
+        </form>
+        <div class="library__results">
+        <div class="card" id="tp-results-card">
+          <div class="card__head">
+            <h2 class="card__title">추천 주제</h2>
+            <span class="count" id="tp-count"></span>
+          </div>
+          <ul class="lab-list" id="tp-results"></ul>
+          <p class="field__hint">여기 주제는 새로 정리한 거예요. 정하기 전에 이미 있는 연구인지 꼭 찾아보세요.</p>
+        </div>
+        <div class="card" id="tp-gen-card" hidden>
+          <div class="card__head">
+            <h2 class="card__title">새로 조합한 주제</h2>
+            <button type="button" class="btn btn--small" id="btn-regenerate">다른 조합 보기</button>
+          </div>
+          <p class="field__hint">재료, 현상, 바꿀 조건, 재는 방법을 섞어서 만든 주제예요. '새로움'은 원래 있던 30개 중 가장 비슷한 주제와 얼마나 다른지예요. 진짜 해 볼 만한지는 선생님께 꼭 여쭤보세요.</p>
+          <ul class="lab-list" id="tp-gen"></ul>
+          <p class="empty" id="tp-gen-empty" hidden>고른 장비로는 만들 수 있는 조합이 없어요. 장비를 더 고르거나 선택을 다 풀어 보세요.</p>
+        </div>
+        </div>
+        </div>
+      </div>
+      <article class="card lab-detail" id="tp-detail" hidden></article>
+    </section>
+
+    <!-- 레시피·라벨 -->
+    <section class="panel" id="panel-recipe" hidden>
+      <div class="no-print">
+        <p class="empty empty--box" id="recipe-empty"></p>
+        <div class="cards" id="cards"></div>
+      </div>
+
+      <div class="card no-print">
+        <h2 class="card__title">라벨</h2>
+        <div class="label-form">
+          <div class="field">
+            <label for="label-date">조제일</label>
+            <input id="label-date" type="date">
+          </div>
+          <div class="field">
+            <label for="label-maker">조제자</label>
+            <input id="label-maker" type="text" maxlength="20">
+          </div>
+          <button type="button" class="btn btn--primary" id="btn-labels">라벨 인쇄</button>
+        </div>
+        <p class="note" id="label-note" role="status"></p>
+        <p class="field__hint">'취급 주의'는 일부 시약에만 붙어요. 어떤 시약이든 쓰기 전에 MSDS를 꼭 확인하세요.</p>
+      </div>
+
+      <div class="card no-print" id="share-card">
+        <h2 class="card__title">목록 보관·공유</h2>
+        <div class="share-bar">
+          <button type="button" class="btn" id="share-link">링크 복사</button>
+          <form class="share-save" id="share-form" autocomplete="off" novalidate>
+            <label class="visually-hidden" for="share-name">보관할 이름</label>
+            <input id="share-name" type="text" maxlength="20" placeholder="이름 (예: 총괄성 실험)">
+            <button type="submit" class="btn" id="share-save">이 브라우저에 보관</button>
+          </form>
+        </div>
+        <p class="note" id="share-note" role="status"></p>
+        <input class="share-url" id="share-url" type="text" readonly hidden aria-label="공유 링크">
+        <ul class="saved" id="saved-list"></ul>
+        <p class="field__hint">링크와 보관에는 조제 목록과 희석 계열에 넣은 값만 들어가요. 조제자 이름은 넣지 않아요.</p>
+      </div>
+
+      <section class="preview" id="label-preview" aria-label="라벨 미리보기" hidden>
+        <div class="preview__bar no-print">
+          <div>
+            <h2 class="card__title">라벨 미리보기</h2>
+            <p class="preview__count" id="preview-count"></p>
+          </div>
+          <div class="preview__actions">
+            <button type="button" class="btn btn--primary" id="btn-print">인쇄하기</button>
+            <button type="button" class="btn" id="btn-close">닫기</button>
+          </div>
+        </div>
+        <p class="note no-print" id="print-note" role="status"></p>
+        <div class="sheets" id="sheets"></div>
+      </section>
+
+      <div class="completion no-print" id="completion" hidden>
+        <span class="completion__label">체험 완료 코드</span>
+        <strong class="completion__code" id="completion-code"></strong>
+      </div>
+    </section>
+
+  </div>
+  <footer class="site-footer no-print">
+    <div class="site-footer__in">
+      <strong>용액 레시피 메이커</strong>
+    </div>
+  </footer>
+
+  <!-- 좁은 화면(640px 이하)에서만 보이는 아래 탭 바. 지금 화면 표시는 머리 메뉴와 같이 data-nav로 한다. -->
+  <nav class="tabbar no-print" id="tabbar" aria-label="화면 이동">
+    <a href="#home" data-nav="home">
+      <span class="tabbar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7M6 9.5V20h4.5v-5h3v5H18V9.5"/></svg></span>
+      <span class="tabbar__text">홈</span>
+    </a>
+    <a href="#solid" data-nav="solid">
+      <span class="tabbar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M7 20h10M5 8h14M6 8l-3 6a3 3 0 0 0 6 0l-3-6M18 8l-3 6a3 3 0 0 0 6 0l-3-6"/></svg></span>
+      <span class="tabbar__text">용액 조제</span>
+    </a>
+    <a href="#labs" data-nav="labs">
+      <span class="tabbar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3M7.5 15h9"/></svg></span>
+      <span class="tabbar__text">실험</span>
+    </a>
+    <a href="#tools" data-nav="tools">
+      <span class="tabbar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg></span>
+      <span class="tabbar__text">계산 도구</span>
+    </a>
+    <a href="#recipe" data-nav="recipe">
+      <span class="tabbar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h8l8 8-8 8-8-8V4zM8.5 8.5h.01"/></svg><span class="tabbar__badge" id="tabbar-count" hidden></span></span>
+      <span class="tabbar__text">레시피·라벨</span>
+    </a>
+  </nav>
+
+  <div class="tour no-print" id="tour" role="region" aria-label="1분 체험 안내" hidden>
+    <div class="tour__head">
+      <span class="tour__step" id="tour-step"></span>
+      <button type="button" class="tour__close" id="tour-close">그만하기</button>
+    </div>
+    <h2 class="tour__title" id="tour-title"></h2>
+    <p class="tour__text" id="tour-text" aria-live="polite"></p>
+    <div class="tour__bar" aria-hidden="true"><span class="tour__fill" id="tour-fill"></span></div>
+    <div class="tour__actions">
+      <button type="button" class="btn" id="tour-prev">이전</button>
+      <button type="button" class="btn btn--primary" id="tour-next">다음</button>
+    </div>
+  </div>
+
+  <script src="reagents.js"></script>
+  <script src="calc.js"></script>
+  <script src="labcalc.js"></script>
+  <script src="experiments.js"></script>
+  <script src="topics.js"></script>
+  <script src="theory.js"></script>
+  <script src="search.js"></script>
+  <script src="curve.js"></script>
+  <script src="share.js"></script>
+  <script src="waste.js"></script>
+  <script src="filein.js"></script>
+  <script src="plan.js"></script>
+  <script src="error.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
