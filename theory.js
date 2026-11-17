@@ -31,6 +31,9 @@
   const pos = (...xs) => xs.every((x) => x > 0);
   const isNum = (...xs) => xs.every((x) => !Number.isNaN(x));
   const signed = (x, digits) => `${x > 0 ? '+' : ''}${fix(x, digits)}`;
+  // 절대영도(−273.15 °C) 이하의 처음 온도는 계산하지 않는다.
+  const COLD = '온도는 절대영도(−273.15 °C)보다 높아야 해요.';
+  const cold = (celsius) => !(celsius + 273.15 > 0);
 
   // 적정에서 뷰렛으로 넣을 부피가 너무 크거나 작으면 알려 준다.
   function buretteNote(ml) {
@@ -220,6 +223,7 @@
       compute(v) {
         const [ca, va, cb, vb, t0, dh] = [num(v.ca), num(v.va), num(v.cb), num(v.vb), num(v.t0), num(v.dh)];
         if (!pos(ca, va, cb, vb, dh) || Number.isNaN(t0)) return fail();
+        if (cold(t0)) return fail(COLD);
         const n = Math.min(ca * va, cb * vb) / 1000;
         const q = n * dh * 1000;
         const mass = va + vb;
@@ -287,6 +291,7 @@
       compute(v) {
         const [m, mm, dh, water, t0] = [num(v.m), num(v.mm), num(v.dh), num(v.water), num(v.t0)];
         if (!pos(m, mm, water) || !isNum(dh, t0) || dh === 0) return fail('질량과 몰질량은 0보다 큰 숫자로, 용해 엔탈피와 온도는 숫자로 입력하세요.');
+        if (cold(t0)) return fail(COLD);
         const n = m / mm;
         const q = n * dh * 1000; // 흡수하는 열 (J)
         const change = -q / ((water + m) * HEAT);

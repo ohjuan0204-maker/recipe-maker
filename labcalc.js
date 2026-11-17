@@ -49,6 +49,9 @@
   const pos = (...xs) => xs.every((x) => x > 0);
   const isNum = (...xs) => xs.every((x) => !Number.isNaN(x));
   const kelvin = (celsius) => celsius + 273.15;
+  // 절대영도(0 K) 이하의 온도: 숫자이긴 하지만 절대 온도가 0보다 크지 않다.
+  const COLD = '온도는 절대영도(−273.15 °C)보다 높아야 합니다.';
+  const cold = (...kelvins) => isNum(...kelvins) && !pos(...kelvins);
   const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
   const listOf = (text) => String(text || '').split(/[\s,;]+/).filter(Boolean).map(Number);
 
@@ -370,6 +373,7 @@
         const p = num(v.p) / (ATM[v.punit] || ATM.hPa);
         const vol = num(v.vol) / 1000;
         const t = kelvin(num(v.t));
+        if (cold(t)) return fail(COLD);
         if (!pos(p, vol, t)) return fail('압력과 부피는 0보다 큰 숫자로, 온도는 숫자로 입력하세요.');
         const n = (p * vol) / (R_ATM * t);
         return { ok: true, rows: [{ label: '압력', value: `${sig(p, 4)} atm` }, { label: '절대 온도', value: `${fix(t, 2)} K` }, { label: '몰수', value: `${sig(n, 4)} mol`, main: true }] };
@@ -398,6 +402,7 @@
         const celsius = num(v.t);
         const total = num(v.p) / (ATM[v.punit] || ATM.hPa);
         if (!pos(mass, mm, ratio, vol, total) || Number.isNaN(celsius)) return fail('증기압을 뺀 모든 칸에 숫자를 입력하세요.');
+        if (cold(kelvin(celsius))) return fail(COLD);
         let vapor = num(v.pw);
         if (Number.isNaN(vapor)) vapor = vaporPressure(celsius);
         if (Number.isNaN(vapor)) return fail('15~30 °C 밖에서는 물의 증기압을 직접 입력하세요.');
@@ -440,6 +445,7 @@
         const t2 = num(v.t2);
         const ccal = v.ccal === '' || v.ccal == null ? 0 : num(v.ccal);
         if (!pos(mass, c) || !isNum(t1, t2, ccal) || ccal < 0) return fail('질량과 비열은 0보다 큰 숫자로, 온도는 숫자로 입력하세요.');
+        if (cold(kelvin(t1), kelvin(t2))) return fail(COLD);
         const dt = t2 - t1;
         const q = (mass * c + ccal) * dt;
         const rows = [
@@ -535,6 +541,7 @@
         const T2 = kelvin(num(v.T2));
         const t1 = num(v.t1);
         const t2 = num(v.t2);
+        if (cold(T1, T2)) return fail(COLD);
         if (!pos(T1, T2, t1, t2)) return fail('온도는 숫자로, 시간은 0보다 큰 숫자로 입력하세요.');
         if (T1 === T2) return fail('두 온도가 달라야 합니다.');
         const ea = (R_J * Math.log(t1 / t2)) / (1 / T1 - 1 / T2);
