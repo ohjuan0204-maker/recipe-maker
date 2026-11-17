@@ -151,6 +151,9 @@
   // 단원을 나타내는 기호. 실험 카드의 머리와 홈의 단원 버튼에 쓴다.
   // 변수는 기울인 글씨, 단위와 pH는 바로 선 글씨로 쓴다. [글자, 아래 첨자, 바로 선 글씨인가]
   const UNIT_MARKS = [['mol', '', true], ['a : b'], ['M', '', true], ['PV = nRT'], ['ΔH'], ['ΔT', 'f'], ['k'], ['K', 'c'], ['pH', '', true], ['E°']];
+  // 실험마다 단원 기호 대신 쓰는 카드 기호 (F20). 화면 글자만 바꾼다: 실험 id·제목·검색어는 그대로다.
+  // 용해도곱 상수는 K에 아래 첨자 sp, 전기 전도도는 σ.
+  const LAB_MARKS = { ksp: 'Ksp', conductivity: 'σ' };
   const trail = []; // 지나온 화면
   let currentPage = '';
   const PAGE = 40; // 시약표에서 한 번에 보여 주는 수
@@ -296,6 +299,19 @@
   function unitMark(unit) {
     const [text, sub, roman] = UNIT_MARKS[unitIndex(unit)] || [''];
     return el('span', { class: roman ? 'mark mark--roman' : 'mark', 'aria-hidden': 'true' }, text, sub ? el('sub', { text: sub }) : null);
+  }
+
+  // 평형 상수 기호를 조각으로 나눈다: 'Ksp' → ['K', { sub: 'sp' }]. 다른 글자는 한 조각 그대로.
+  function symbolParts(text) {
+    const m = /^K(sp|a|b|c|w)$/.exec(String(text));
+    return m ? ['K', { sub: m[1] }] : [String(text)];
+  }
+
+  // 실험 카드의 기호. 실험마다 정한 기호(LAB_MARKS)가 있으면 그것을, 없으면 단원 기호를 쓴다.
+  function labMark(lab) {
+    const symbol = lab && LAB_MARKS[lab.id];
+    if (!symbol) return unitMark(lab.unit);
+    return el('span', { class: 'mark', 'aria-hidden': 'true' }, symbolParts(symbol).map((p) => (typeof p === 'string' ? p : el('sub', { text: p.sub }))));
   }
 
   const flat = (text) => String(text).toLowerCase().replace(/\s+/g, '');
@@ -813,7 +829,7 @@
       $('today-lab').addEventListener('click', () => openLab(lab.id));
       $('today-lab-art').replaceChildren(
         ...kids(
-          el('span', { class: `today-art__mark unit-${unitIndex(lab.unit)}` }, unitMark(lab.unit)),
+          el('span', { class: `today-art__mark unit-${unitIndex(lab.unit)}` }, labMark(lab)),
           lab.colors ? el('span', { class: 'today-art__colors' }, lab.colors.steps.map(([name, color]) => el('span', { class: 'today-art__swatch', style: `background:${color}`, title: name }))) : null
         )
       );
@@ -1622,7 +1638,7 @@
           el(
             'button',
             { type: 'button', class: `lab-item lab-item--thumb unit-${unitIndex(e.unit)}`, 'data-lab': e.id },
-            el('span', { class: 'lab-item__thumb' }, unitMark(e.unit)),
+            el('span', { class: 'lab-item__thumb' }, labMark(e)),
             el(
               'span',
               { class: 'lab-item__body' },
