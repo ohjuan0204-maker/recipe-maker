@@ -543,12 +543,15 @@
   /*
    * 원액 조제 안내 (SPEC 27장). 단위가 mg/L이고 원액을 만드는 데 드는 시약이 0.1 g(LIMITS.lowMass)보다 적으면
    * 저울로 바로 달 수 없다. 1000 mg/L 원액을 먼저 만들고 그것을 100 mL로 묽히라고 알려 준다.
-   * 원액이 이미 1000 mg/L 이상이면 안내하지 않는다(묽힐 것이 없다).
+   * 원액이 이미 1000 mg/L 이상이면 안내하지 않는다(묽힐 것이 없다). 원액이 100 mL보다 많이 필요할 때도 안내하지 않는다.
    */
   function stockGuide(unit, stock, prepVolume) {
     if (unit !== 'mg/L' || !(stock > 0) || !(prepVolume > 0)) return '';
     if (!(stock < ABSORB.intermediate)) return '';
+    // 안내대로 하면 원액이 100 mL 생긴다. 그보다 많이 필요하면 모자라므로 안내하지 않는다.
+    if (prepVolume > 100) return '';
     const mass = (stock * prepVolume) / 1e6; // mg/L × mL → g
+    // 고체 조제의 노란 표시와 같은 기준: 화면에 보이는 소수 셋째 자리로 0.100 g 미만일 때
     if (!(roundTo(mass, 3) < LIMITS.lowMass)) return '';
     const take = (stock / ABSORB.intermediate) * 100;
     return `1000 mg/L 원액(시약 0.250 g → 250 mL)을 먼저 만든 뒤 ${formatFixed(take, 2)} mL를 100 mL로 묽히기`;

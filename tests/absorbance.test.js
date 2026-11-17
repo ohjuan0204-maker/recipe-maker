@@ -72,6 +72,10 @@ test('B2 원액 조제 안내: 흡광도 샘플이면 "10.00 mL를 100 mL로", �
   // 시약이 0.1 g 이상 들면(500 mg/L × 250 mL = 0.125 g) 저울로 달 수 있으니 안내하지 않는다
   assert.equal(C.stockGuide('mg/L', 500, 250), '');
   assert.equal(C.stockGuide('mg/L', 500, 100), '1000 mg/L 원액(시약 0.250 g → 250 mL)을 먼저 만든 뒤 50.00 mL를 100 mL로 묽히기');
+  // 안내대로 만들면 원액이 100 mL뿐이다. 250 mL가 필요하면(합 150 mL) 모자라므로 안내하지 않는다
+  assert.equal(C.computeDilution({ stock: '100', unit: 'mg/L', rows: [{ conc: '50', volume: '300' }] }).stockGuide, '');
+  assert.equal(C.stockGuide('mg/L', 100, 100), '1000 mg/L 원액(시약 0.250 g → 250 mL)을 먼저 만든 뒤 10.00 mL를 100 mL로 묽히기');
+  assert.equal(C.stockGuide('mg/L', 100, 250), '');
   // 계산할 행이 없으면 빈 글
   assert.equal(C.computeDilution({ stock: '100', unit: 'mg/L', rows: [{ conc: '', volume: '' }] }).stockGuide, '');
 });
