@@ -1503,7 +1503,8 @@
       el(
         'div',
         { class: 'rg-actions' },
-        el('button', { type: 'button', class: 'btn btn--small', 'data-use': 'solid', 'data-id': r.id, text: '고체 조제' }),
+        // 액체 시약은 저울로 달아 만들 수 없으므로 [고체 조제]를 그리지 않는다.
+        r.liquid ? null : el('button', { type: 'button', class: 'btn btn--small', 'data-use': 'solid', 'data-id': r.id, text: '고체 조제' }),
         r.liquid && r.molarMass != null
           ? el('button', { type: 'button', class: 'btn btn--small', 'data-use': 'liquid', 'data-id': r.id, text: '액체 시약' })
           : null
