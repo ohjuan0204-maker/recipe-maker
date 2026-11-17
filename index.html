@@ -32,6 +32,7 @@
           <div class="mode-pick" id="mode-pick" role="group" aria-label="화면 밝기"></div>
           <div class="theme-pick" id="theme-pick" role="group" aria-label="화면 색"></div>
           <button type="button" class="btn btn--sample" id="btn-sample">샘플<span class="btn-sample__more">: 총괄성 실험</span></button>
+          <button type="button" class="btn btn--sample" id="btn-sample-abs"><span class="btn-sample__more">샘플:&nbsp;</span>흡광도<span class="btn-sample__more">&nbsp;실험</span></button>
         </div>
       </div>
     </div>
@@ -388,6 +389,7 @@
           </div>
           <div class="row-actions">
             <button type="button" class="btn" id="btn-add-row">행 추가</button>
+            <button type="button" class="btn" id="btn-sample-abs-dil">샘플: 흡광도 실험</button>
             <span class="note" id="dil-row-note" role="status"></span>
           </div>
         </form>
@@ -401,10 +403,12 @@
             </thead>
             <tbody id="dil-result"></tbody>
           </table>
+          <p class="hint" id="dil-absorb" hidden></p>
           <div class="stats" id="dil-summary" hidden>
             <p class="stat" id="dil-total"></p>
             <p class="stat" id="dil-flask"></p>
             <p class="stat stat--warn" id="dil-over" hidden></p>
+            <p class="stat" id="dil-guide" hidden></p>
           </div>
         </div>
       </div>

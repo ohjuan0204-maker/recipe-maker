@@ -62,6 +62,8 @@
     lowMass: '저울 오차 큼 — 더 큰 부피로 조제 권장',
     mgNote: 'mg/L는 고른 시약 자체의 질량 기준',
     pctNote: '% (w/v)는 용액 100 mL에 든 시약 자체의 질량(g) 기준',
+    absorbNote: 'ε 7.4×10⁴ L/(mol·cm), 무수물 기준, 1 cm 셀 가정 — 기기마다 다름',
+    absorbOver: '측정 범위를 넘을 수 있음 — 더 묽게',
     emptyRecipe: '먼저 고체 조제나 희석 탭에서 용액을 추가하세요.',
     defaultSolutionName: '용액',
   };
@@ -124,17 +126,31 @@
       { reagentId: '포도당', conc: '0.500', unit: 'M', volume: '100', purity: '100' },
       { reagentId: '요소', conc: '0.500', unit: 'M', volume: '100', purity: '100' },
     ],
+  };
+
+  // [샘플: 흡광도 실험]이 불러오는 값(SPEC 27장). 희석 탭만 채운다.
+  // 1000 mg/L → 10~100 mg/L였던 예전 샘플은 예상 흡광도가 20을 넘어서(잴 수 없는 범위) 100 mg/L → 0.5~4 mg/L로 바꿨다.
+  const SAMPLE_ABSORBANCE = {
     dilution: {
       name: '메틸렌 블루',
-      stock: '1000',
+      stock: '100',
       unit: 'mg/L',
       rows: [
-        { conc: '10', volume: '50' },
-        { conc: '20', volume: '50' },
-        { conc: '50', volume: '50' },
-        { conc: '100', volume: '50' },
+        { conc: '0.5', volume: '50' },
+        { conc: '1', volume: '50' },
+        { conc: '2', volume: '50' },
+        { conc: '4', volume: '50' },
       ],
     },
+  };
+
+  // 메틸렌 블루의 예상 흡광도 (A = ε·c·l). 몰질량은 무수물, 셀 길이 1 cm로 가정한다.
+  const ABSORB = {
+    reagent: '메틸렌 블루', // 용액 이름에 이 글자가 있을 때만 보여 준다
+    epsilon: 74000, // L/(mol·cm)
+    molarMass: 319.85, // g/mol (무수물)
+    limit: 1.0, // 이보다 크면 측정 범위를 넘을 수 있다
+    intermediate: 1000, // 먼저 만드는 진한 원액 (mg/L): 시약 0.250 g → 250 mL
   };
 
   /* ---------- 숫자 다루기 ---------- */
@@ -520,7 +536,40 @@
       totalText: formatFixed(total, 2),
       flask: hasValid ? flask : null,
       overFlask: hasValid && flask === null,
+      stockGuide: hasValid ? stockGuide(unit, stock, flask === null ? need : flask) : '',
     };
+  }
+
+  /*
+   * 원액 조제 안내 (SPEC 27장). 단위가 mg/L이고 원액을 만드는 데 드는 시약이 0.1 g(LIMITS.lowMass)보다 적으면
+   * 저울로 바로 달 수 없다. 1000 mg/L 원액을 먼저 만들고 그것을 100 mL로 묽히라고 알려 준다.
+   * 원액이 이미 1000 mg/L 이상이면 안내하지 않는다(묽힐 것이 없다).
+   */
+  function stockGuide(unit, stock, prepVolume) {
+    if (unit !== 'mg/L' || !(stock > 0) || !(prepVolume > 0)) return '';
+    if (!(stock < ABSORB.intermediate)) return '';
+    const mass = (stock * prepVolume) / 1e6; // mg/L × mL → g
+    if (!(roundTo(mass, 3) < LIMITS.lowMass)) return '';
+    const take = (stock / ABSORB.intermediate) * 100;
+    return `1000 mg/L 원액(시약 0.250 g → 250 mL)을 먼저 만든 뒤 ${formatFixed(take, 2)} mL를 100 mL로 묽히기`;
+  }
+
+  /*
+   * 예상 흡광도 (SPEC 27장). 용액 이름에 "메틸렌 블루"가 있을 때만 계산한다.
+   * A = 74000 × (mg/L ÷ 1000 ÷ 319.85). M과 mM도 몰 농도로 바꿔 같은 식에 넣는다. %는 계산하지 않는다.
+   * 돌려주는 값: { show, note, rows: [{ concText, unit, value, text, over }] }
+   */
+  function expectedAbsorbance(name, dilution) {
+    const none = { show: false, note: TEXT.absorbNote, rows: [] };
+    if (!String(name == null ? '' : name).includes(ABSORB.reagent)) return none;
+    if (!dilution || !dilution.ok || !dilution.hasValid) return none;
+    const toMolar = { 'mg/L': (c) => c / 1000 / ABSORB.molarMass, M: (c) => c, mM: (c) => c / 1000 }[dilution.unit];
+    if (!toMolar) return none;
+    const rows = dilution.validRows.map((r) => {
+      const value = ABSORB.epsilon * toMolar(r.conc);
+      return { concText: r.concText, unit: dilution.unit, value, text: formatFixed(value, 3), over: value > ABSORB.limit };
+    });
+    return { show: rows.length > 0, note: TEXT.absorbNote, rows };
   }
 
   /* ---------- 연속 희석 ---------- */
@@ -801,6 +850,8 @@
     commonLiquids,
     SOLVENTS,
     SAMPLE,
+    SAMPLE_ABSORBANCE,
+    ABSORB,
     parseNumber,
     roundTo,
     formatFixed,
@@ -811,6 +862,8 @@
     computeSolid,
     computeLiquid,
     computeDilution,
+    stockGuide,
+    expectedAbsorbance,
     computeSerial,
     convertConcentration,
     computeTitration,

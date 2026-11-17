@@ -1189,6 +1189,25 @@
     };
   }
 
+  // 예상 흡광도 (SPEC 27장): 용액 이름에 "메틸렌 블루"가 있을 때만 희석표 아래에 보인다.
+  function renderAbsorbance(input) {
+    if (sameInput('absorbance', { name: input.name, stock: input.stock, unit: input.unit, rows: input.rows })) return;
+    const box = $('dil-absorb');
+    const info = C.expectedAbsorbance(input.name, C.computeDilution(input));
+    box.hidden = !info.show;
+    if (!info.show) {
+      box.replaceChildren();
+      return;
+    }
+    const parts = [el('strong', { text: '예상 흡광도' })];
+    info.rows.forEach((r) => {
+      parts.push(' ', el('span', { class: 'absorb__item' }, `${r.concText} ${r.unit} → `, el('strong', { text: r.text })));
+      if (r.over) parts.push(' ', badge('warn', C.TEXT.absorbOver));
+    });
+    parts.push(' ', el('span', { class: 'mark-muted', text: info.note }));
+    box.replaceChildren(...parts);
+  }
+
   function renderDilution() {
     const input = readDilution();
     const rowNodes = Array.from($('dil-rows').children);
@@ -1205,6 +1224,9 @@
     const full = rowNodes.length >= C.LIMITS.dilutionRows;
     $('btn-add-row').disabled = full;
     setText($('dil-row-note'), full ? `목표 행은 ${C.LIMITS.dilutionRows}행까지입니다.` : '');
+
+    // 예상 흡광도는 용액 이름에 따라 보이므로 이름이 바뀔 때도 다시 본다.
+    renderAbsorbance(input);
 
     // 계산에 들어가는 값(원액 농도, 단위, 행)이 그대로면 결과 표는 다시 그리지 않는다. 용액 이름은 결과 표와 상관없다.
     if (sameInput('dilution', { stock: input.stock, unit: input.unit, rows: input.rows })) return;
@@ -1259,6 +1281,9 @@
       ' ',
       el('strong', { text: `${result.totalText} mL` })
     );
+    // 원액을 만들 시약이 너무 적어 저울로 달 수 없으면 진한 원액을 먼저 만들라고 알려 준다 (SPEC 27장).
+    $('dil-guide').hidden = !result.stockGuide;
+    setText($('dil-guide'), result.stockGuide || '');
     $('dil-flask').hidden = result.overFlask;
     $('dil-over').hidden = !result.overFlask;
     if (result.overFlask) {
@@ -4408,19 +4433,27 @@
 
   /* ---------- 샘플 ---------- */
 
+  // [샘플: 총괄성 실험]: 고체 넷만 조제 목록에 넣는다. 희석 탭은 건드리지 않는다 (SPEC 27장).
   function loadSample() {
     state.list = C.SAMPLE.solids.map((solid) => C.computeSolid(solid).item);
-    const dilution = C.SAMPLE.dilution;
+    flash('list-note', '');
+    flash('liq-note', '');
+    showTab('solid');
+    renderAll();
+    flash('sample-note', '샘플을 불러왔습니다. 조제 목록을 확인하세요.', 5000);
+  }
+
+  // [샘플: 흡광도 실험]: 조제 목록은 그대로 두고 희석 탭만 채운다 (SPEC 27장).
+  function loadAbsorbanceSample() {
+    const dilution = C.SAMPLE_ABSORBANCE.dilution;
     $('dil-name').value = dilution.name;
     $('dil-stock').value = dilution.stock;
     $('dil-unit').value = dilution.unit;
     $('dil-rows').replaceChildren();
     dilution.rows.forEach((row) => addDilRow(row.conc, row.volume));
-    flash('list-note', '');
-    flash('liq-note', '');
-    showTab('solid');
+    showTab('dilution');
     renderAll();
-    flash('sample-note', '샘플을 불러왔습니다. 조제 목록과 희석 탭을 확인하세요.', 5000);
+    flash('sample-note', '흡광도 샘플을 불러왔습니다. 희석 탭을 확인하세요.', 5000);
   }
 
   function renderAll() {
@@ -4459,7 +4492,11 @@
     {
       page: 'dilution',
       title: '원액 하나로 여러 농도',
-      text: '1000 mg/L 원액으로 10·20·50·100 mg/L를 만들 때 덜어 낼 원액과 넣을 증류수예요. 1 mL보다 적게 덜어야 하는 줄에는 노란 표시가 붙어요.',
+      text: '100 mg/L 원액 하나로 4가지 농도(0.5·1·2·4 mg/L)를 만들 때 덜어 낼 원액과 넣을 증류수예요. 1 mL보다 적게 덜어야 하는 줄에는 노란 표시가 붙어요.',
+      run: () => {
+        loadAbsorbanceSample();
+        flash('sample-note', '');
+      },
       spot: '#dil-table',
     },
     {
@@ -4803,6 +4840,8 @@
       if (recipeStale) drawRecipe();
     });
     $('btn-sample').addEventListener('click', loadSample);
+    $('btn-sample-abs').addEventListener('click', loadAbsorbanceSample);
+    $('btn-sample-abs-dil').addEventListener('click', loadAbsorbanceSample); // 좁은 화면에서는 머리의 버튼 대신 희석 탭의 이 버튼을 쓴다
     setupTour();
 
     // 실험과 실험 계산 모음 (labcalc.js나 experiments.js를 빼면 숨는다)

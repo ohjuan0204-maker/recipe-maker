@@ -7464,3 +7464,27 @@ input:placeholder-shown {
     transition: none !important;
   }
 }
+
+/* ---------- 2차 런 (SPEC 27장): 흡광도 샘플 ---------- */
+
+/* 좁은 화면의 머리에는 색 점 다섯 개가 다 보여야 한다. [샘플: 흡광도 실험]은 희석 탭의 같은 이름 버튼으로 누른다. */
+@media (max-width: 700px) {
+  .site-util #btn-sample-abs {
+    display: none;
+  }
+}
+
+/* 예상 흡광도 줄: 농도마다 한 덩어리로 줄이 바뀐다. */
+#dil-absorb {
+  margin-top: 12px;
+  line-height: 1.7;
+}
+
+#dil-absorb .absorb__item {
+  white-space: nowrap;
+  margin-right: 6px;
+}
+
+#dil-guide {
+  flex-basis: 100%;
+}

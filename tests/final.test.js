@@ -161,7 +161,7 @@ const recompute = (entry) => (entry.kind === 'liquid' ? C.computeLiquid(entry.in
 
 test('A79 조제 목록을 싸고 풀면 같은 목록이 다시 계산된다 (고체, 액체, 직접 넣은 시약, 희석 계열)', () => {
   const items = sampleItems();
-  const code = SH.encode(items, C.SAMPLE.dilution);
+  const code = SH.encode(items, C.SAMPLE_ABSORBANCE.dilution); // 2차 런: 희석 샘플은 흡광도 샘플 (SPEC 27장)
   assert.match(code, /^[A-Za-z0-9_-]+$/, '주소에 넣을 수 있는 글자만');
   assert.ok(code.length < 1500);
   const back = SH.decode(code);
@@ -175,7 +175,7 @@ test('A79 조제 목록을 싸고 풀면 같은 목록이 다시 계산된다 (�
   });
   assert.equal(again[4].item.amountText, '8.58 mL');
   assert.equal(again[5].item.koreanName, '시험 <b>시약</b>', '이름은 글자 그대로 돌아온다 (화면에서는 글자로만 보여 준다)');
-  assert.deepEqual(back.dilution, { name: '메틸렌 블루', stock: '1000', unit: 'mg/L', rows: C.SAMPLE.dilution.rows });
+  assert.deepEqual(back.dilution, { name: '메틸렌 블루', stock: '100', unit: 'mg/L', rows: C.SAMPLE_ABSORBANCE.dilution.rows });
   // 희석을 넣지 않았으면 희석은 싸지 않는다
   assert.equal(SH.decode(SH.encode(items.slice(0, 1), { name: '', stock: '', unit: 'M', rows: [{ conc: '', volume: '' }] })).dilution, null);
   // 조제자 이름 같은 것은 넣을 자리가 없다

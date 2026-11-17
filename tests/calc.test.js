@@ -37,7 +37,7 @@ function sampleItems() {
 }
 
 function sampleDilution() {
-  return C.computeDilution(C.SAMPLE.dilution);
+  return C.computeDilution(C.SAMPLE_ABSORBANCE.dilution); // 2차 런: 희석 샘플은 흡광도 샘플로 옮겼다 (SPEC 27장)
 }
 
 test('A1 고체 조제 V1~V6: 기대값과 ±0.001 g 안에서 일치하고 소수 셋째 자리로 표시', () => {
@@ -132,9 +132,9 @@ test('A7 희석 D1·D2·D5: 원액·증류수 부피, 원액 합계, 권장 원�
   assert.equal(noStock.message, '원액 농도는 0보다 큰 숫자로 입력하세요.');
 });
 
-test('A8 노란 표시: 원액 부피 1.00 mL 미만인 행에만 (D1의 10 mg/L 행)', () => {
+test('A8 노란 표시: 원액 부피 1.00 mL 미만인 행에만 (흡광도 샘플의 0.5·1 mg/L 행)', () => {
   const d1 = sampleDilution();
-  assert.deepEqual(texts(d1.rows, 'pipetteWarning'), [true, false, false, false]);
+  assert.deepEqual(texts(d1.rows, 'pipetteWarning'), [true, true, false, false]);
   assert.equal(C.TEXT.pipette, '피펫 오차 큼 — 중간 희석 권장');
 });
 
@@ -173,7 +173,7 @@ test('A11 원액 합계 9.10 mL이면 권장 조제량 25 mL (D3)', () => {
 });
 
 test('A12 레시피 카드: 샘플에서 고체 4장과 희석 1장, G8의 문장 틀', () => {
-  const cards = C.buildCards(sampleItems(), C.SAMPLE.dilution.name, sampleDilution());
+  const cards = C.buildCards(sampleItems(), C.SAMPLE_ABSORBANCE.dilution.name, sampleDilution());
   assert.deepEqual(cards.map((c) => c.kind), ['solid', 'solid', 'solid', 'solid', 'dilution']);
   assert.equal(cards[0].title, '염화 나트륨 0.100 M 250 mL');
   assert.deepEqual(cards[0].steps, [
@@ -183,23 +183,23 @@ test('A12 레시피 카드: 샘플에서 고체 4장과 희석 1장, G8의 문�
   ]);
   assert.equal(cards[1].title, '염화 마그네슘 육수화물 0.100 M 100 mL');
   assert.equal(cards[1].steps[0], '염화 마그네슘 육수화물 2.033 g을 칭량한다.');
-  assert.equal(cards[4].title, '메틸렌 블루 희석 계열 (원액 1000 mg/L)');
+  assert.equal(cards[4].title, '메틸렌 블루 희석 계열 (원액 100 mg/L)');
   assert.equal(cards[4].steps.length, 4);
-  assert.equal(cards[4].steps[0], '원액 0.50 mL에 증류수 49.50 mL를 더해 10 mg/L 50 mL를 만든다.');
-  assert.equal(cards[4].steps[3], '원액 5.00 mL에 증류수 45.00 mL를 더해 100 mg/L 50 mL를 만든다.');
-  assert.equal(cards[4].summary, '원액은 모두 9.00 mL 필요하다. 권장 원액 조제량 10 mL.');
+  assert.equal(cards[4].steps[0], '원액 0.25 mL에 증류수 49.75 mL를 더해 0.5 mg/L 50 mL를 만든다.');
+  assert.equal(cards[4].steps[3], '원액 2.00 mL에 증류수 48.00 mL를 더해 4 mg/L 50 mL를 만든다.');
+  assert.equal(cards[4].summary, '원액은 모두 3.75 mL 필요하다. 권장 원액 조제량 10 mL.');
   assert.deepEqual(C.buildCards([], '', C.computeDilution({ stock: '', rows: [] })), []);
-  assert.equal(C.dilutionCard('', sampleDilution()).title, '용액 희석 계열 (원액 1000 mg/L)');
+  assert.equal(C.dilutionCard('', sampleDilution()).title, '용액 희석 계열 (원액 100 mg/L)');
 });
 
 test('A13 라벨: 한 장에 최대 12개, 13번째부터 다음 장, 내용은 이름·농도·조제일·조제자', () => {
   const date = C.formatDate('2026-11-17');
   assert.equal(date, '2026. 11. 17.');
   assert.equal(C.formatDate(''), '');
-  const labels = C.buildLabels(sampleItems(), C.SAMPLE.dilution.name, sampleDilution(), date, '홍길동');
+  const labels = C.buildLabels(sampleItems(), C.SAMPLE_ABSORBANCE.dilution.name, sampleDilution(), date, '홍길동');
   assert.equal(labels.length, 8);
   assert.deepEqual(labels[0], { name: '염화 나트륨', conc: '0.100 M', date: '2026. 11. 17.', maker: '홍길동', caution: false });
-  assert.deepEqual(labels[7], { name: '메틸렌 블루', conc: '100 mg/L', date: '2026. 11. 17.', maker: '홍길동', caution: false });
+  assert.deepEqual(labels[7], { name: '메틸렌 블루', conc: '4 mg/L', date: '2026. 11. 17.', maker: '홍길동', caution: false });
   assert.deepEqual(C.paginate(labels).map((s) => s.length), [8]);
 
   const twelve = Array.from({ length: 12 }, () => sampleItems()[0]);
@@ -242,7 +242,7 @@ test('A15 내장 시약의 라벨 이름: 화학식 없이 5장의 한글 이름
   }
 });
 
-test('A16 샘플: 조제 목록 4행(글자 그대로)과 희석 값, MgCl2·6H2O 행의 수화물 배지', () => {
+test('A16 샘플: 조제 목록 4행(글자 그대로), MgCl2·6H2O 행의 수화물 배지, 희석 값은 흡광도 샘플에', () => {
   const items = sampleItems();
   assert.deepEqual(
     items.map((i) => `${i.displayName} ${i.concText} ${i.unit} ${i.volumeText} mL ${i.purityText}% → ${i.massText} g`),
@@ -254,15 +254,16 @@ test('A16 샘플: 조제 목록 4행(글자 그대로)과 희석 값, MgCl2·6H2
     ]
   );
   assert.deepEqual(items.map((i) => i.hydrateBadge), [false, true, false, false]);
-  assert.deepEqual(C.SAMPLE.dilution, {
+  assert.equal(C.SAMPLE.dilution, undefined, '고체 샘플에는 희석이 없다 (SPEC 27장)');
+  assert.deepEqual(C.SAMPLE_ABSORBANCE.dilution, {
     name: '메틸렌 블루',
-    stock: '1000',
+    stock: '100',
     unit: 'mg/L',
     rows: [
-      { conc: '10', volume: '50' },
-      { conc: '20', volume: '50' },
-      { conc: '50', volume: '50' },
-      { conc: '100', volume: '50' },
+      { conc: '0.5', volume: '50' },
+      { conc: '1', volume: '50' },
+      { conc: '2', volume: '50' },
+      { conc: '4', volume: '50' },
     ],
   });
 });
