@@ -110,3 +110,8 @@
 - `node --test`(20:28) → `tests 118, pass 117, fail 1`. 실패 1건: `A56 글꼴` — `ENOENT: no such file or directory, open '…\fonts\chars.txt'`(원본 폴더의 `fonts/chars.txt`가 복사되지 않음. 코드 문제가 아니라 파일이 없는 것).
 - 고친 방법(1줄 수정은 아니지만 파일 복원): 서브에이전트가 `fonts/`의 woff 여섯 개에서 실제로 든 글자(cmap)만 읽어 `fonts/chars.txt`를 다시 만듦(지어낸 글자 없음, 스크립트는 저장소 밖). 그 뒤 `node --test` → 아래 줄.
 - `node --test`(20:30) → `ℹ tests 118 ℹ pass 118 ℹ fail 0`
+- B0 통과 — 커밋 "2차: 강산 pH 묽은 농도 Kw 반영" 푸시(20:30). 화면 확인(염산 1e-8 M → 6.98)은 공개 주소에 반영된 뒤 아래 "화면 확인"에 적는다.
+
+### B1 체험 완료 코드
+
+- `app.js` 22행 `const COMPLETION_CODE = '미정';` → `'1004'` (deploy/spec.md 3장 예외 2, 사람이 채팅으로 준 값). `node --test` 118/118.

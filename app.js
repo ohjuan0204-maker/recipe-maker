@@ -19,7 +19,7 @@
   const E = window.LabError; // 오차 분석 (error.js)
 
   // 체험 완료 코드 (SPEC 8장). 운영진 안내를 받은 뒤 이 한 줄만 바꾼다.
-  const COMPLETION_CODE = '미정';
+  const COMPLETION_CODE = '1004';
 
   // R&E 주제 추천 화면을 메뉴에 넣을지. 팀이 2026. 11. 13.에 우선 빼기로 했다 (SPEC 19장).
   // false면 홈의 "오늘의 R&E 주제"로 주제 하나만 열어 볼 수 있다. true로 바꾸면 메뉴와 추천 화면이 돌아온다.
