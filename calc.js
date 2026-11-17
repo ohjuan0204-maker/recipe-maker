@@ -56,7 +56,7 @@
     needNumbers: '모든 칸에 0보다 큰 숫자를 입력하세요.',
     needConvert: '값을 0보다 큰 숫자로 입력하세요.',
     convertNeedsMolarMass: '몰 농도와 질량 농도를 오가려면 몰질량이 필요합니다.',
-    veryDilute: '매우 묽어서 물의 자동 이온화를 무시할 수 없습니다. 이 값은 참고만 하세요.',
+    veryDilute: '매우 묽어서 물의 자동 이온화(Kw)까지 함께 계산했습니다 (25 °C).',
     listFull: '조제 목록은 12행까지입니다.',
     overFlask: '원액이 250 mL보다 많이 필요함 — 나누어 조제',
     lowMass: '저울 오차 큼 — 더 큰 부피로 조제 권장',
@@ -657,7 +657,10 @@
     const conc = parseNumber(src.conc);
     const n = parseNumber(src.n);
     if (!(conc > 0) || !(n > 0)) return { ok: false, message: TEXT.needNumbers };
-    const ion = conc * n; // [H+] 또는 [OH-]
+    const added = conc * n; // 산·염기가 내놓는 [H+] 또는 [OH-]
+    // 물의 자동 이온화(Kw = 1.0e-14)를 함께 푼다: x = (C + √(C² + 4Kw)) / 2.
+    // 이것을 빼면 1e-8 M 염산이 pH 8(염기성)로 나왔다. 이제 6.98이 되고, 아주 묽으면 7.00에 다가간다.
+    const ion = (added + Math.sqrt(added * added + 4e-14)) / 2;
     const p = -Math.log10(ion);
     const pH = kind === 'acid' ? p : 14 - p;
     return {
@@ -667,7 +670,7 @@
       pHText: formatFixed(pH, 2),
       pOHText: formatFixed(14 - pH, 2),
       ionText: formatSig(ion, 3),
-      note: ion < 1e-6 ? TEXT.veryDilute : '',
+      note: added < 1e-6 ? TEXT.veryDilute : '',
     };
   }
 

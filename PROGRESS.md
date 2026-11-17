@@ -98,3 +98,15 @@
 - PG12 통과 — 375px: 홈·용액 조제(`#solid`)·희석(`#dilution`)·레시피(`#recipe`)·폐액(`#waste`) 모두 `scrollWidth 375 <= innerWidth 375`. 320px: 다섯 화면 모두 `320 <= 320`. 콘솔 오류 0개. 네트워크 요청 46건 모두 200, 404 0개, `favicon.ico` 요청 없음. 너비는 desktop으로 되돌림.
 - PG13 [사람] — 휴대폰(모바일 데이터·학교 와이파이) 확인은 사람이 한다.
 - PG7 통과 — 첫 시도는 푸시 전이라 `422 The main branch must exist…`. 푸시 뒤 `gh api -X POST repos/ohjuan0204-maker/recipe-maker/pages -f "source[branch]=main" -f "source[path]=/"` → `https://ohjuan0204-maker.github.io/recipe-maker/ build_type=legacy` (19:59:11).
+
+## 2차 런 (20:30~21:15)
+
+- 출발 상태(20:25): 사람이 중간 점검에 복사해 넣은 것 — `SPEC.md`(26장), `TASKS.md`, `SURVEY.md`, `tests/`(테스트 파일 14개 + `fixtures/` 5개), `loop2/`, `deploy/`, `PROGRESS_원본.md`, `README_원본.md`, 고쳐진 `calc.js`(강산·강염기 pH에 Kw 반영). 없는 것: `fonts/chars.txt`, `tools/check_mw.mjs`, `tools/build_fonts.py`, `tests/fixplan.test.js`, `fix_plan.md`, `FIX.md`, SPEC 27장.
+- 체험 완료 코드: 프롬프트의 칸은 `____`였지만 사람이 채팅으로 "체험완료 코드는 1004"라고 알려 줌 → 1004를 쓴다. 중간 점검 할 일 5번(시약 목록 선생님 확인)은 사람이 "생략"이라고 함.
+- 공개 점검(새 파일, 푸시 전): 이 일을 하지 않은 서브에이전트 셋(Opus 5.5 high)이 문서 개인정보 / `tests/fixtures` 속 내용과 메타데이터 / 열쇠·외부 주소를 따로 점검 → 셋 다 "푸시해도 됨". 실명·학번·전화·실제 메일·학교 이름·열쇠 0건. `fixtures`의 docx·xlsx 작성자 메타데이터는 `python-docx`·`openpyxl`(사람 이름 없음), 값은 SPEC A77·A97의 시험값. "확인 필요" 1건: `tests/calc.test.js` 199·201·202행의 조제자 예시 이름 `김가람` → 실제 사람인지 알 수 없어 묻지 않고 `홍길동`으로 바꿈(3곳, 테스트는 그대로 통과).
+
+### B0 기준선 + pH 수정
+
+- `node --test`(20:28) → `tests 118, pass 117, fail 1`. 실패 1건: `A56 글꼴` — `ENOENT: no such file or directory, open '…\fonts\chars.txt'`(원본 폴더의 `fonts/chars.txt`가 복사되지 않음. 코드 문제가 아니라 파일이 없는 것).
+- 고친 방법(1줄 수정은 아니지만 파일 복원): 서브에이전트가 `fonts/`의 woff 여섯 개에서 실제로 든 글자(cmap)만 읽어 `fonts/chars.txt`를 다시 만듦(지어낸 글자 없음, 스크립트는 저장소 밖). 그 뒤 `node --test` → 아래 줄.
+- `node --test`(20:30) → `ℹ tests 118 ℹ pass 118 ℹ fail 0`
