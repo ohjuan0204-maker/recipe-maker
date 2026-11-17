@@ -210,6 +210,6 @@
 - [x] T136 B4 F16 시약표의 액체 시약에는 [고체 조제]를 그리지 않음 — 확인: `tests/reagent-buttons.test.js` 3건, PROGRESS 2차 런 B4 `node --test` 155/155
 - [x] T137 B5 문서(SPEC 27장, README, PROGRESS, TASKS, FIX, PROMPT) — 확인: SPEC.md 27장(27.1~27.7, A112~A121), README.md(공개 주소·1분 체험 3줄·원본 합침), PROGRESS.md(1부 원본 보존 + 2부), FIX.md "2차 처리 결과", PROMPT.md "2차 런 프롬프트". 쓴 에이전트와 다른 검토 에이전트가 코드·PROGRESS와 대조함
 - [x] T138 공개 주소 최종 확인 — 확인: PROGRESS.md "2차 보고"(커밋 617d41b, check_pages 같음 29/29, 완료 코드 1004·pH 6.98·흡광도 샘플·콘솔 0·375px)
-- [ ] T139 휴대폰으로 공개 주소 확인(모바일 데이터·학교 와이파이) — 사람
+- [x] T139 휴대폰으로 공개 주소 확인(모바일 데이터·학교 와이파이) — 사람 (20:51 사람이 "휴대폰으로 열어봤는데 잘 돼"라고 알림. 어느 망인지는 듣지 못함: PROGRESS "2차 보고")
 - [ ] T140 심사 제출란·패들렛·체험 투표 안내의 주소를 공개 주소로 바꾸기 — 사람
 - [ ] T141 원본 폴더의 `fonts/chars.txt`·`tools/check_mw.mjs`·`tools/build_fonts.py`·`tests/fixplan.test.js`·`fix_plan.md`를 이 폴더와 맞추기(이 폴더에 복사되지 않아서 `chars.txt`는 글꼴에서 다시 만들었다) — 사람
